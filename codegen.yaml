@@ -1,0 +1,43 @@
+schema: ./schema.graphql
+documents: ./src/queries.graphql
+generates:
+  ./src/generated/graphql-resolver-types.ts:
+    plugins:
+      - typescript
+      - typescript-resolvers
+    config:
+      maybeValue: T | null | undefined
+      useIndexSignature: true
+      contextType: '@/server/graphql/resolvers#Context'
+      avoidOptionals: true
+      mapperTypeSuffix: Entity
+      mappers:
+        User: '@prisma/client#User'
+        Socials: '@prisma/client#Socials'
+
+  ./src/generated/graphql-hooks.ts:
+    plugins:
+      - typescript
+      - typescript-operations
+      - typescript-react-query
+    config:
+      maybeValue: T | null | undefined
+      fetcher:
+        endpoint: '"/api/graphql"'
+        fetchParams:
+          headers:
+            'Content-Type': 'application/json'
+
+  ./src/generated/graphql-yup-schema.ts:
+    plugins:
+      - typescript-validation-schema
+    config:
+      schema: yup
+      importFrom: ./graphql-resolver-types
+      notAllowEmptyString: true
+      directives:
+        constraint:
+          label: label
+          minLength: min
+          maxLength: max
+          required: required

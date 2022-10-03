@@ -1,0 +1,102 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Game {
+  id          String    @id @default(uuid())
+  key         String    @unique
+  name        String
+  description String
+  logoUrl     String
+  website     String
+  socials     Socials   @relation(fields: [socialsId], references: [id])
+  projects    Project[]
+  tags        Tag[]
+  socialsId   String
+}
+
+model Project {
+  id                 String               @id @default(uuid())
+  game               Game                 @relation(fields: [gameId], references: [id])
+  key                String               @unique
+  name               String
+  abstract           String
+  description        String?
+  donationAddress    String?
+  logoUrl            String?
+  website            String
+  socials            Socials              @relation(fields: [socialsId], references: [id])
+  posts              ProjectPost[]
+  projectAuthorships ProjectAuthorships[]
+  tags               Tag[]
+  gameId             String
+  socialsId          String
+  published          Boolean              @default(false)
+  lastUpdate         DateTime?
+}
+
+model ProjectPost {
+  id        String  @id @default(uuid())
+  project   Project @relation(fields: [projectId], references: [id])
+  author    User    @relation(fields: [authorId], references: [id])
+  authorId  String
+  projectId String
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+model User {
+  id                 String               @id @default(uuid())
+  address            String               @unique
+  name               String?
+  bio                String?
+  joinedAt           DateTime
+  role               UserRole             @default(USER)
+  socials            Socials              @relation(fields: [socialsId], references: [id])
+  posts              ProjectPost[]
+  projectAuthorships ProjectAuthorships[]
+  socialsId          String
+}
+
+enum ProjectAuthorRole {
+  ADMIN
+  AUTHOR
+}
+
+model ProjectAuthorships {
+  user      User              @relation(fields: [userId], references: [id])
+  project   Project           @relation(fields: [projectId], references: [id])
+  type      ProjectAuthorRole
+  userId    String
+  projectId String
+
+  @@id([userId, projectId])
+}
+
+model Tag {
+  id       String    @id @default(uuid())
+  key      String    @unique
+  name     String
+  game     Game?     @relation(fields: [gameId], references: [id])
+  gameId   String?
+  projects Project[]
+}
+
+model Socials {
+  id      String    @id @default(uuid())
+  website String?
+  twitter String?
+  github  String?
+  discord String?
+  Game    Game[]
+  Project Project[]
+  User    User[]
+}

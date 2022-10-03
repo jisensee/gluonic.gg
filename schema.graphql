@@ -1,0 +1,65 @@
+directive @constraint(
+  required: Boolean
+  minLength: Int
+  maxLength: Int
+  label: String
+) on INPUT_FIELD_DEFINITION
+
+type Query {
+  currentUser: User
+}
+
+input SocialsInput {
+  website: String @constraint(maxLength: 64, label: "Website")
+  twitter: String @constraint(maxLength: 64, label: "Twitter")
+  github: String @constraint(maxLength: 64, label: "Github")
+  discord: String @constraint(maxLength: 64, label: "Discord")
+}
+
+input ProjectSocialsInput {
+  twitter: String @constraint(maxLength: 64, label: "Twitter")
+  github: String @constraint(maxLength: 64, label: "Github")
+  discord: String @constraint(maxLength: 64, label: "Discord")
+}
+input ProjectBaseDataInput {
+  abstract: String! @constraint(maxLength: 500, label: "Abstract")
+  description: String @constraint(maxLength: 2000, label: "Project description")
+  website: String! @constraint(maxLength: 64, label: "Website")
+  published: Boolean!
+}
+input ProjectDonationInput {
+  donationAddress: String @constraint(maxLength: 64, label: "Donation address")
+}
+input ProjectUpdateInput {
+  socials: ProjectSocialsInput
+  baseData: ProjectBaseDataInput
+  donationData: ProjectDonationInput
+}
+
+input OwnUserUpdateInput {
+  name: String @constraint(maxLength: 25, label: "Name")
+  bio: String @constraint(maxLength: 300, label: "Bio")
+  socials: SocialsInput!
+}
+
+type Mutation {
+  updateOwnUser(data: OwnUserUpdateInput!): User!
+  updateProject(projectId: ID!, data: ProjectUpdateInput!): Boolean!
+}
+
+type Socials {
+  website: String
+  twitter: String
+  github: String
+  discord: String
+}
+
+type User {
+  id: ID!
+  name: String!
+  bio: String
+  address: String
+  hasDefaultName: Boolean!
+  socials: Socials!
+  isProjectAuthor: Boolean!
+}
