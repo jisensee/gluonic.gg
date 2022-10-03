@@ -31,6 +31,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
     include: {
       socials: true,
       projectAuthorships: {
+        where: { project: { published: true } },
         include: { project: { include: { game: true, socials: true } } },
       },
     },
