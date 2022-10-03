@@ -19,7 +19,7 @@ export const Header = () => {
       <Navbar className='bg-base-300 rounded-b'>
         <div className='main-container flex flex-row items-center px-2'>
           <Link href='/'>
-            <img src='/gluonic-logo.svg' className='h-12' />
+            <img src='/gluonic-logo.svg' className='h-12' alt='gluonic logo' />
           </Link>
           <div className='grow' />
           {!authLoading && (

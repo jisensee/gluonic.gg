@@ -1,5 +1,5 @@
 import { Game, Socials } from '@prisma/client'
-import { GetServerSideProps } from 'next'
+import { GetStaticProps } from 'next'
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 import Head from 'next/head'
 import { db } from '@/server/db'
@@ -10,12 +10,13 @@ import { Link } from '@/components/link'
 type Props = {
   games: (Game & { socials: Socials })[]
 }
-export const getServerSideProps: GetServerSideProps<Props> = async () => {
+export const getStaticProps: GetStaticProps<Props> = async () => {
   const games = await db.game.findMany({ include: { socials: true } })
   return {
     props: {
       games,
     },
+    revalidate: 60,
   }
 }
 

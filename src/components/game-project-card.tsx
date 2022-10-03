@@ -42,7 +42,11 @@ export const GameProjectCard: FC<GameProjectCardProps> = ({
   >
     <div className='flex flex-row gap-x-3 items-center'>
       <Link className='w-14 md:w-14' href={detailLink}>
-        <img className='w-full min-w-full' src={logoUrl} />
+        <img
+          className='w-full min-w-full'
+          src={logoUrl}
+          alt={`${title} logo`}
+        />
       </Link>
       <div className='flex flex-row gap-x-5 flex-wrap items-center'>
         <h2 className='text-primary'>{title}</h2>

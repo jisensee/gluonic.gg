@@ -42,8 +42,14 @@ export const DonationModal: FC<DonationModalProps> = ({
         </p>
         {purposeText}
         {donationButton('eth', <FontAwesomeIcon icon={faEthereum} size='2x' />)}
-        {donationButton('dai', <img className='h-7' src='/dai-logo.svg' />)}
-        {donationButton('usdc', <img className='h-7' src='/usdc-logo.svg' />)}
+        {donationButton(
+          'dai',
+          <img className='h-7' src='/dai-logo.svg' alt='DAI logo' />
+        )}
+        {donationButton(
+          'usdc',
+          <img className='h-7' src='/usdc-logo.svg' alt='USDC logo' />
+        )}
         <Button onClick={() => onCopy(targetAddress)}>{buttonText}</Button>
         <Alert
           className='text-xl'

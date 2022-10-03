@@ -50,7 +50,11 @@ export default function GamePage({ game }: Props) {
       <div className='flex flex-col gap-y-3'>
         <div className='flex flex-row items-center gap-x-8 gap-y-2 flex-wrap justify-center sm:justify-start bg-base-200 p-3 rounded-2xl'>
           <div className='flex flex-row items-center gap-x-3 mr-auto'>
-            <img className='h-10' src={game.logoUrl} />
+            <img
+              className='h-10'
+              src={game.logoUrl}
+              alt={`${game.name} logo`}
+            />
             <h1>{game.name}</h1>
           </div>
           <LinkButton

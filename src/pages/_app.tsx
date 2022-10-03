@@ -93,6 +93,10 @@ function AppHead() {
       <link rel='mask-icon' href='/safari-pinned-tab.svg' color='#dca54c' />
       <meta name='msapplication-TileColor' content='#dca54c' />
       <meta name='theme-color' content='#dca54c' />
+      <meta
+        name='description'
+        content='Gluonic is the best place to discover community projects for your favorite games.'
+      />
     </Head>
   )
 }

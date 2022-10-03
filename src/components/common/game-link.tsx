@@ -19,7 +19,7 @@ export const GameLink: FC<GameLinkProps> = ({
     href={`/${gameKey}`}
     highlight
   >
-    <img className='h-8' src={logoUrl} />
+    <img className='h-8' src={logoUrl} alt={`${name} logo`} />
     <span className='font-bold text-lg'>{name}</span>
   </Link>
 )
