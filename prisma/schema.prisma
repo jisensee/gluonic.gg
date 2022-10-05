@@ -8,16 +8,17 @@ datasource db {
 }
 
 model Game {
-  id          String    @id @default(uuid())
-  key         String    @unique
-  name        String
-  description String
-  logoUrl     String
-  website     String
-  socials     Socials   @relation(fields: [socialsId], references: [id])
-  projects    Project[]
-  tags        Tag[]
-  socialsId   String
+  id              String           @id @default(uuid())
+  key             String           @unique
+  name            String
+  description     String
+  logoUrl         String
+  website         String
+  socials         Socials          @relation(fields: [socialsId], references: [id])
+  projects        Project[]
+  projectRequests ProjectRequest[]
+  tags            Tag[]
+  socialsId       String
 }
 
 model Project {
@@ -63,6 +64,7 @@ model User {
   socials            Socials              @relation(fields: [socialsId], references: [id])
   posts              ProjectPost[]
   projectAuthorships ProjectAuthorships[]
+  projectRequests    ProjectRequest[]
   socialsId          String
 }
 
@@ -99,4 +101,17 @@ model Socials {
   Game    Game[]
   Project Project[]
   User    User[]
+}
+
+model ProjectRequest {
+  id              String   @id @default(uuid())
+  projectName     String
+  projectAbstract String
+  projectWebsite  String
+  requestedAt     DateTime @default(now())
+  rejected        Boolean  @default(false)
+  user            User     @relation(fields: [userId], references: [id])
+  game            Game     @relation(fields: [gameId], references: [id])
+  userId          String
+  gameId          String
 }

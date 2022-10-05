@@ -4,7 +4,6 @@ import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 import Head from 'next/head'
 import { db } from '@/server/db'
 import { GameProjectCard } from '@/components/game-project-card'
-import { GluonicData } from '@/gluonic.data'
 import { Link } from '@/components/link'
 
 type Props = {
@@ -34,13 +33,9 @@ export default function HomePage({ games }: Props) {
           The place to discover all the community projects for your favourite
           game!
         </p>
-        <p className=''>
-          Reach out in our{' '}
-          <Link href={GluonicData.discord} external highlight>
-            discord server
-          </Link>{' '}
-          if you would like to have your project added.
-        </p>
+        <Link className='text-xl' href='/request-project' highlight>
+          Add your project!
+        </Link>
       </div>
       {games.map((game) => (
         <GameProjectCard

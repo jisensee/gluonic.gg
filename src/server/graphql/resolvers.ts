@@ -10,6 +10,7 @@ import {
   OwnUserUpdateInputSchema,
   ProjectBaseDataInputSchema,
   ProjectDonationInputSchema,
+  ProjectRequestInputSchema,
   ProjectSocialsInputSchema,
 } from '@/generated/graphql-yup-schema'
 
@@ -107,12 +108,75 @@ export const resolvers: Resolvers = {
         }
         return true
       }),
+    requestProject: (_, { data }, context) =>
+      requireUserGql(context, async (user) => {
+        ProjectRequestInputSchema().validateSync(data)
+        const game = await db.game.findUnique({ where: { id: data.gameId } })
+        if (!game) {
+          throw UserInputError
+        }
+
+        await db.projectRequest.create({
+          data: {
+            projectName: data.name,
+            projectAbstract: data.abstract,
+            projectWebsite: data.website,
+            userId: user.id,
+            gameId: game.id,
+          },
+        })
+        return true
+      }),
+    processProjectRequest: (
+      _,
+      { requestId, isAccepted, projectKey },
+      context
+    ) =>
+      requireUserGql(context, async (user) => {
+        const request = await db.projectRequest.findUnique({
+          where: { id: requestId },
+          include: { game: true },
+        })
+        if (!request) {
+          throw UserInputError
+        }
+
+        if (isAccepted && projectKey) {
+          await db.$transaction([
+            db.project.create({
+              data: {
+                key: projectKey,
+                name: request.projectName,
+                abstract: request.projectAbstract,
+                website: request.projectWebsite,
+                game: { connect: { id: request.game.id } },
+                projectAuthorships: {
+                  create: { type: 'ADMIN', userId: user.id },
+                },
+                socials: { create: {} },
+              },
+            }),
+            db.projectRequest.delete({ where: { id: request.id } }),
+          ])
+        } else if (!isAccepted) {
+          await db.projectRequest.update({
+            where: { id: request.id },
+            data: {
+              rejected: true,
+            },
+          })
+        } else {
+          throw UserInputError
+        }
+        return true
+      }),
   },
   User: {
     id: (user) => user.id,
     name: (user) => user.name ?? user.address,
     bio: (user) => user.bio,
     hasDefaultName: (user) => user.name === null,
+    isAdmin: (user) => user.role === 'ADMIN',
     isProjectAuthor: async (user) =>
       (await db.projectAuthorships.count({ where: { user } })) > 0,
     address: (user, _, { user: requestingUser }) =>

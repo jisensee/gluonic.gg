@@ -1,15 +1,47 @@
-import { Game, Project } from '@prisma/client'
+import { Game, Project, ProjectRequest } from '@prisma/client'
 import { GetServerSideProps } from 'next'
 import { Card } from 'react-daisyui'
-import { faEdit, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
+import {
+  faClockRotateLeft,
+  faEdit,
+  faMagnifyingGlass,
+  faTimes,
+  IconDefinition,
+} from '@fortawesome/free-solid-svg-icons'
 import Head from 'next/head'
+import { FC, PropsWithChildren } from 'react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import classNames from 'classnames'
 import { withUser } from '@/server/server-utils'
 import { db } from '@/server/db'
 import { LinkButton } from '@/components/common/link-button'
 import { GameLink } from '@/components/common/game-link'
 
+type ProjectCardProps = {
+  name: string
+  game: Game
+  abstract: string
+} & PropsWithChildren
+const ProjectCard: FC<ProjectCardProps> = ({
+  name,
+  game,
+  abstract,
+  children,
+}) => (
+  <Card className='flex flex-row items-center gap-x-5 gap-y-3 border-primary py-3 px-5 flex-wrap justify-center md:justify-start'>
+    <div className='flex flex-col gap-y-1'>
+      <h2>{name}</h2>
+      <GameLink gameKey={game.key} name={game.name} logoUrl={game.logoUrl} />
+    </div>
+    <div className='hidden md:flex'>{abstract}</div>
+    <div className='grow' />
+    {children}
+  </Card>
+)
+
 type Props = {
   projects: (Project & { game: Game })[]
+  projectRequests: (ProjectRequest & { game: Game })[]
 }
 
 export const getServerSideProps: GetServerSideProps<Props> = (context) =>
@@ -19,48 +51,94 @@ export const getServerSideProps: GetServerSideProps<Props> = (context) =>
       include: { project: { include: { game: true } } },
     })
     const projects = authorships.map((authorship) => authorship.project)
+    const projectRequests = await db.projectRequest.findMany({
+      where: { user },
+      include: { game: true },
+    })
 
-    return { props: { projects } }
+    return { props: { projects, projectRequests } }
   })
 
-export default function MyProjectsPage({ projects }: Props) {
+type RequestStatusProps = {
+  icon: IconDefinition
+  className?: string
+} & PropsWithChildren
+const RequestStatus: FC<RequestStatusProps> = ({
+  icon,
+  children,
+  className,
+}) => (
+  <div
+    className={classNames(
+      'flex flex-row gap-x-3 items-center text-xl',
+      className
+    )}
+  >
+    <FontAwesomeIcon icon={icon} />
+    {children}
+  </div>
+)
+
+export default function MyProjectsPage({ projects, projectRequests }: Props) {
   return (
     <div className='flex flex-col gap-y-3'>
       <Head>
         <title>My Projects</title>
       </Head>
-      <h1>My Projects</h1>
-      {projects.map((project) => (
-        <Card
-          key={project.id}
-          className='flex flex-row items-center gap-x-5 gap-y-3 border-primary py-3 px-5 flex-wrap justify-center md:justify-start'
-        >
-          <div className='flex flex-col gap-y-1'>
-            <h2>{project.name}</h2>
-            <GameLink
-              gameKey={project.game.key}
-              name={project.game.name}
-              logoUrl={project.game.logoUrl}
-            />
-          </div>
-          <div className='hidden md:flex'>{project.abstract}</div>
-          <div className='grow' />
-          <LinkButton
-            href={`/${project.game.key}/${project.key}`}
-            icon={faMagnifyingGlass}
-            button={{ color: 'secondary' }}
-          >
-            View
-          </LinkButton>
-          <LinkButton
-            href={`/${project.game.key}/${project.key}/manage`}
-            icon={faEdit}
-            button={{ color: 'primary' }}
-          >
-            Manage
-          </LinkButton>
-        </Card>
-      ))}
+      {projectRequests.length > 0 && (
+        <>
+          <h1>My project requests </h1>
+          {projectRequests.map((request) => (
+            <ProjectCard
+              key={request.id}
+              name={request.projectName}
+              abstract={request.projectAbstract}
+              game={request.game}
+            >
+              {request.rejected ? (
+                <RequestStatus className='text-error' icon={faTimes}>
+                  Rejected
+                </RequestStatus>
+              ) : (
+                <RequestStatus
+                  className='text-warning'
+                  icon={faClockRotateLeft}
+                >
+                  Pending
+                </RequestStatus>
+              )}
+            </ProjectCard>
+          ))}
+        </>
+      )}
+      {projects.length > 0 && (
+        <>
+          <h1>My Projects</h1>
+          {projects.map((project) => (
+            <ProjectCard
+              key={project.id}
+              name={project.name}
+              abstract={project.abstract}
+              game={project.game}
+            >
+              <LinkButton
+                href={`/${project.game.key}/${project.key}`}
+                icon={faMagnifyingGlass}
+                button={{ color: 'secondary' }}
+              >
+                View
+              </LinkButton>
+              <LinkButton
+                href={`/${project.game.key}/${project.key}/manage`}
+                icon={faEdit}
+                button={{ color: 'primary' }}
+              >
+                Manage
+              </LinkButton>
+            </ProjectCard>
+          ))}
+        </>
+      )}
     </div>
   )
 }

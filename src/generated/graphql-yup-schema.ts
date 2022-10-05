@@ -1,5 +1,5 @@
 import * as yup from 'yup'
-import { OwnUserUpdateInput, ProjectBaseDataInput, ProjectDonationInput, ProjectSocialsInput, ProjectUpdateInput, SocialsInput } from './graphql-resolver-types'
+import { OwnUserUpdateInput, ProjectBaseDataInput, ProjectDonationInput, ProjectRequestInput, ProjectSocialsInput, ProjectUpdateInput, SocialsInput } from './graphql-resolver-types'
 
 export function OwnUserUpdateInputSchema(): yup.SchemaOf<OwnUserUpdateInput> {
   return yup.object({
@@ -21,6 +21,15 @@ export function ProjectBaseDataInputSchema(): yup.SchemaOf<ProjectBaseDataInput>
 export function ProjectDonationInputSchema(): yup.SchemaOf<ProjectDonationInput> {
   return yup.object({
     donationAddress: yup.string().max(64).label("Donation address")
+  })
+}
+
+export function ProjectRequestInputSchema(): yup.SchemaOf<ProjectRequestInput> {
+  return yup.object({
+    abstract: yup.string().required().max(500).label("Project abstract"),
+    gameId: yup.string().required(),
+    name: yup.string().required().max(64).label("Project name"),
+    website: yup.string().required().max(64).label("Project website")
   })
 }
 

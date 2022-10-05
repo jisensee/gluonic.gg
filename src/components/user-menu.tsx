@@ -1,5 +1,7 @@
 import {
+  faAdd,
   faAngleDown,
+  faCogs,
   faSignOut,
   faTableList,
   faUser,
@@ -36,10 +38,22 @@ export const UserMenu: FC<UserMenuProps> = ({ signOut, name }) => {
         </div>
       </Dropdown.Toggle>
       <Dropdown.Menu className='right-0 w-fit bg-base-200 border border-primary whitespace-nowrap'>
+        {user?.isAdmin && (
+          <Dropdown.Item>
+            <FontAwesomeIcon icon={faCogs} fixedWidth />
+            <Link href='/admin'>Administration</Link>
+          </Dropdown.Item>
+        )}
         {user?.isProjectAuthor && (
           <Dropdown.Item>
             <FontAwesomeIcon icon={faTableList} fixedWidth />
             <Link href='/my-projects'>My projects</Link>
+          </Dropdown.Item>
+        )}
+        {user && (
+          <Dropdown.Item>
+            <FontAwesomeIcon icon={faAdd} fixedWidth />
+            <Link href='/request-project'>Add project</Link>
           </Dropdown.Item>
         )}
         <Dropdown.Item>

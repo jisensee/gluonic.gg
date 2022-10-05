@@ -18,8 +18,22 @@ export type Scalars = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  processProjectRequest: Maybe<Scalars['Boolean']>;
+  requestProject: Scalars['Boolean'];
   updateOwnUser: User;
   updateProject: Scalars['Boolean'];
+};
+
+
+export type MutationProcessProjectRequestArgs = {
+  isAccepted: Scalars['Boolean'];
+  projectKey: InputMaybe<Scalars['String']>;
+  requestId: Scalars['ID'];
+};
+
+
+export type MutationRequestProjectArgs = {
+  data: ProjectRequestInput;
 };
 
 
@@ -48,6 +62,13 @@ export type ProjectBaseDataInput = {
 
 export type ProjectDonationInput = {
   donationAddress: InputMaybe<Scalars['String']>;
+};
+
+export type ProjectRequestInput = {
+  abstract: Scalars['String'];
+  gameId: Scalars['String'];
+  name: Scalars['String'];
+  website: Scalars['String'];
 };
 
 export type ProjectSocialsInput = {
@@ -88,6 +109,7 @@ export type User = {
   bio: Maybe<Scalars['String']>;
   hasDefaultName: Scalars['Boolean'];
   id: Scalars['ID'];
+  isAdmin: Scalars['Boolean'];
   isProjectAuthor: Scalars['Boolean'];
   name: Scalars['String'];
   socials: Socials;
@@ -170,6 +192,7 @@ export type ResolversTypes = ResolversObject<{
   OwnUserUpdateInput: OwnUserUpdateInput;
   ProjectBaseDataInput: ProjectBaseDataInput;
   ProjectDonationInput: ProjectDonationInput;
+  ProjectRequestInput: ProjectRequestInput;
   ProjectSocialsInput: ProjectSocialsInput;
   ProjectUpdateInput: ProjectUpdateInput;
   Query: ResolverTypeWrapper<{}>;
@@ -188,6 +211,7 @@ export type ResolversParentTypes = ResolversObject<{
   OwnUserUpdateInput: OwnUserUpdateInput;
   ProjectBaseDataInput: ProjectBaseDataInput;
   ProjectDonationInput: ProjectDonationInput;
+  ProjectRequestInput: ProjectRequestInput;
   ProjectSocialsInput: ProjectSocialsInput;
   ProjectUpdateInput: ProjectUpdateInput;
   Query: {};
@@ -207,6 +231,8 @@ export type ConstraintDirectiveArgs = {
 export type ConstraintDirectiveResolver<Result, Parent, ContextType = Context, Args = ConstraintDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
 export type MutationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
+  processProjectRequest: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationProcessProjectRequestArgs, 'isAccepted' | 'requestId'>>;
+  requestProject: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationRequestProjectArgs, 'data'>>;
   updateOwnUser: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUpdateOwnUserArgs, 'data'>>;
   updateProject: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationUpdateProjectArgs, 'data' | 'projectId'>>;
 }>;
@@ -228,6 +254,7 @@ export type UserResolvers<ContextType = Context, ParentType extends ResolversPar
   bio: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   hasDefaultName: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  isAdmin: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   isProjectAuthor: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   name: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   socials: Resolver<ResolversTypes['Socials'], ParentType, ContextType>;

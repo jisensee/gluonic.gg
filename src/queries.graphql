@@ -5,6 +5,7 @@ fragment OwnUserData on User {
   address
   hasDefaultName
   isProjectAuthor
+  isAdmin
   socials {
     website
     twitter
@@ -27,4 +28,20 @@ mutation UpdateOwnUser($data: OwnUserUpdateInput!) {
 
 mutation UpdateProject($projectId: ID!, $data: ProjectUpdateInput!) {
   updateProject(projectId: $projectId, data: $data)
+}
+
+mutation RequestProject($projectRequestData: ProjectRequestInput!) {
+  requestProject(data: $projectRequestData)
+}
+
+mutation ProcessProjectRequest(
+  $requestId: ID!
+  $isAccepted: Boolean!
+  $projectKey: String
+) {
+  processProjectRequest(
+    requestId: $requestId
+    isAccepted: $isAccepted
+    projectKey: $projectKey
+  )
 }

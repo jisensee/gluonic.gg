@@ -9,6 +9,17 @@ type Query {
   currentUser: User
 }
 
+type Mutation {
+  updateOwnUser(data: OwnUserUpdateInput!): User!
+  updateProject(projectId: ID!, data: ProjectUpdateInput!): Boolean!
+  requestProject(data: ProjectRequestInput!): Boolean!
+  processProjectRequest(
+    requestId: ID!
+    isAccepted: Boolean!
+    projectKey: String
+  ): Boolean
+}
+
 input SocialsInput {
   website: String @constraint(maxLength: 64, label: "Website")
   twitter: String @constraint(maxLength: 64, label: "Twitter")
@@ -36,15 +47,17 @@ input ProjectUpdateInput {
   donationData: ProjectDonationInput
 }
 
+input ProjectRequestInput {
+  name: String! @constraint(maxLength: 64, label: "Project name")
+  abstract: String! @constraint(maxLength: 500, label: "Project abstract")
+  website: String! @constraint(maxLength: 64, label: "Project website")
+  gameId: String!
+}
+
 input OwnUserUpdateInput {
   name: String @constraint(maxLength: 25, label: "Name")
   bio: String @constraint(maxLength: 300, label: "Bio")
   socials: SocialsInput!
-}
-
-type Mutation {
-  updateOwnUser(data: OwnUserUpdateInput!): User!
-  updateProject(projectId: ID!, data: ProjectUpdateInput!): Boolean!
 }
 
 type Socials {
@@ -59,6 +72,7 @@ type User {
   name: String!
   bio: String
   address: String
+  isAdmin: Boolean!
   hasDefaultName: Boolean!
   socials: Socials!
   isProjectAuthor: Boolean!
