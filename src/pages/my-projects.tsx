@@ -2,6 +2,7 @@ import { Game, Project, ProjectRequest } from '@prisma/client'
 import { GetServerSideProps } from 'next'
 import { Card } from 'react-daisyui'
 import {
+  faAdd,
   faClockRotateLeft,
   faEdit,
   faMagnifyingGlass,
@@ -16,6 +17,7 @@ import { withUser } from '@/server/server-utils'
 import { db } from '@/server/db'
 import { LinkButton } from '@/components/common/link-button'
 import { GameLink } from '@/components/common/game-link'
+import { PageTitle } from '@/components/common/page-title'
 
 type ProjectCardProps = {
   name: string
@@ -111,34 +113,46 @@ export default function MyProjectsPage({ projects, projectRequests }: Props) {
           ))}
         </>
       )}
-      {projects.length > 0 && (
-        <>
-          <h1>My Projects</h1>
-          {projects.map((project) => (
-            <ProjectCard
-              key={project.id}
-              name={project.name}
-              abstract={project.abstract}
-              game={project.game}
+      <>
+        <PageTitle
+          className='mt-2'
+          rightElement={
+            <LinkButton
+              href='/request-project'
+              icon={faAdd}
+              button={{ color: 'primary' }}
             >
-              <LinkButton
-                href={`/${project.game.key}/${project.key}`}
-                icon={faMagnifyingGlass}
-                button={{ color: 'secondary' }}
-              >
-                View
-              </LinkButton>
-              <LinkButton
-                href={`/${project.game.key}/${project.key}/manage`}
-                icon={faEdit}
-                button={{ color: 'primary' }}
-              >
-                Manage
-              </LinkButton>
-            </ProjectCard>
-          ))}
-        </>
-      )}
+              Request project
+            </LinkButton>
+          }
+        >
+          My Projects
+        </PageTitle>
+        {projects.length === 0 && <p>You don't manage any projects yet.</p>}
+        {projects.map((project) => (
+          <ProjectCard
+            key={project.id}
+            name={project.name}
+            abstract={project.abstract}
+            game={project.game}
+          >
+            <LinkButton
+              href={`/${project.game.key}/${project.key}`}
+              icon={faMagnifyingGlass}
+              button={{ color: 'secondary' }}
+            >
+              View
+            </LinkButton>
+            <LinkButton
+              href={`/${project.game.key}/${project.key}/manage`}
+              icon={faEdit}
+              button={{ color: 'primary' }}
+            >
+              Manage
+            </LinkButton>
+          </ProjectCard>
+        ))}
+      </>
     </div>
   )
 }

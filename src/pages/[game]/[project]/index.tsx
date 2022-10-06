@@ -129,9 +129,9 @@ export default function ProjectPage({ project, authors, canManage }: Props) {
       </Head>
       <Header />
       <Actions />
-      <p>{project.abstract}</p>
+      <p className='text-lg'>{project.abstract}</p>
       {authors.length > 0 && (
-        <h3>{authors.length > 1 ? 'Authors' : 'Author'}</h3>
+        <h2>{authors.length > 1 ? 'Authors' : 'Author'}</h2>
       )}
       <div className='flex flex-row gap-3 flex-wrap'>
         {authors.map((author) => (
@@ -146,10 +146,9 @@ export default function ProjectPage({ project, authors, canManage }: Props) {
         ))}
       </div>
       {project.description && (
-        <>
-          <h2 className='mt-2'>Project description</h2>
-          <Markdown.Display>{project.description}</Markdown.Display>
-        </>
+        <Markdown.Display className='mt-2'>
+          {project.description}
+        </Markdown.Display>
       )}
     </div>
   )

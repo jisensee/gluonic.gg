@@ -6,7 +6,7 @@ import { useEnsureWalletConnected } from '@/hooks/wallet-context'
 import { useSignIn } from '@/hooks/auth-hooks'
 
 export const SignInButton = () => {
-  const { signIn } = useSignIn()
+  const { signIn, inProgress } = useSignIn()
   const { address } = useAccount()
   const { isConnected, ensureWalletConnected } = useEnsureWalletConnected({
     modalArgs: {
@@ -24,6 +24,7 @@ export const SignInButton = () => {
     <Button
       color='accent'
       startIcon={<FontAwesomeIcon icon={faEthereum} />}
+      loading={inProgress}
       onClick={() => {
         if (isConnected && address) {
           signIn(address)

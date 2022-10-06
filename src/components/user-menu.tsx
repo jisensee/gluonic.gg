@@ -5,10 +5,11 @@ import {
   faSignOut,
   faTableList,
   faUser,
+  IconDefinition,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { isAddress } from 'ethers/lib/utils'
-import { FC } from 'react'
+import { FC, PropsWithChildren } from 'react'
 import { Dropdown } from 'react-daisyui'
 import { Link } from './link'
 import { useAuthContext } from '@/context/auth-context'
@@ -21,6 +22,21 @@ const formatName = (name: string) => {
   return name
 }
 
+type ItemProps = {
+  href: string
+  icon: IconDefinition
+} & PropsWithChildren
+const Item: FC<ItemProps> = ({ href, icon, children }) => (
+  <Dropdown.Item
+    onClick={() => (document.activeElement as HTMLElement)?.blur()}
+  >
+    <Link className='flex flex-row gap-x-3 items-center' href={href}>
+      <FontAwesomeIcon icon={icon} fixedWidth />
+      {children}
+    </Link>
+  </Dropdown.Item>
+)
+
 type UserMenuProps = {
   signOut: () => void
   name: string
@@ -30,7 +46,7 @@ export const UserMenu: FC<UserMenuProps> = ({ signOut, name }) => {
   const { user } = useAuthContext()
 
   return (
-    <Dropdown horizontal='center' className=''>
+    <Dropdown horizontal='center'>
       <Dropdown.Toggle color='ghost'>
         <div className='flex flex-row items-center gap-x-3 text-primary normal-case text-xl'>
           {formatName(name)}
@@ -38,28 +54,20 @@ export const UserMenu: FC<UserMenuProps> = ({ signOut, name }) => {
         </div>
       </Dropdown.Toggle>
       <Dropdown.Menu className='right-0 w-fit bg-base-200 border border-primary whitespace-nowrap'>
+        <Item href='/profile' icon={faUser}>
+          My profile
+        </Item>
         {user?.isAdmin && (
-          <Dropdown.Item>
-            <FontAwesomeIcon icon={faCogs} fixedWidth />
-            <Link href='/admin'>Administration</Link>
-          </Dropdown.Item>
+          <Item href='/admin' icon={faCogs}>
+            Administration
+          </Item>
         )}
-        {user?.isProjectAuthor && (
-          <Dropdown.Item>
-            <FontAwesomeIcon icon={faTableList} fixedWidth />
-            <Link href='/my-projects'>My projects</Link>
-          </Dropdown.Item>
-        )}
-        {user && (
-          <Dropdown.Item>
-            <FontAwesomeIcon icon={faAdd} fixedWidth />
-            <Link href='/request-project'>Add project</Link>
-          </Dropdown.Item>
-        )}
-        <Dropdown.Item>
-          <FontAwesomeIcon icon={faUser} fixedWidth />
-          <Link href='/profile'>My Profile</Link>
-        </Dropdown.Item>
+        <Item href='/my-projects' icon={faTableList}>
+          My projects
+        </Item>
+        <Item href='/request-project' icon={faAdd}>
+          Request project
+        </Item>
         <Dropdown.Item onClick={signOut}>
           <FontAwesomeIcon icon={faSignOut} fixedWidth />
           Sign out
