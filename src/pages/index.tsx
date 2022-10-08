@@ -7,10 +7,12 @@ import { GameProjectCard } from '@/components/game-project-card'
 import { Link } from '@/components/link'
 
 type Props = {
-  games: (Game & { socials: Socials })[]
+  games: (Game & { socials: Socials; _count: { projects: number } })[]
 }
 export const getStaticProps: GetStaticProps<Props> = async () => {
-  const games = await db.game.findMany({ include: { socials: true } })
+  const games = await db.game.findMany({
+    include: { socials: true, _count: { select: { projects: true } } },
+  })
   return {
     props: {
       games,
@@ -41,7 +43,7 @@ export default function HomePage({ games }: Props) {
         <GameProjectCard
           key={game.key}
           detailLink={`/${game.key}`}
-          detailText='Discover projects'
+          detailText={`Discover ${game._count.projects} projects`}
           detailIcon={faMagnifyingGlass}
           title={game.name}
           abstract={game.description}
