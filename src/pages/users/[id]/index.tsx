@@ -124,7 +124,9 @@ export default function UserPage({
                 count: project._count.favoritedBy,
                 favorited: isFavorited(project.id),
               }}
-              onFavoriteToggle={() => toggleFavorite(project.id)}
+              onFavoriteToggle={
+                toggleFavorite ? () => toggleFavorite(project.id) : undefined
+              }
             />
           ))}
         </div>

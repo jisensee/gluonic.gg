@@ -54,12 +54,12 @@ export const useFavoriteState = (
 
   return {
     localFavoriteState: localState,
-    toggleFavorite: () => {
-      if (serverToggle) {
-        dispatchFavAction({ type: 'toggle' })
-        serverToggle()
-      }
-    },
+    toggleFavorite: serverToggle
+      ? () => {
+          dispatchFavAction({ type: 'toggle' })
+          serverToggle()
+        }
+      : undefined,
   }
 }
 
@@ -82,12 +82,12 @@ export const useFavoriteProjectsList = (favoritedProjectIds?: string[]) => {
   return {
     isFavorited: (projectId: string) =>
       favoritedProjects?.includes(projectId) ?? false,
-    toggleFavorite: (projectId: string) => {
-      mutateAsync({ projectId }).then((v) => {
-        if (updateFavorite) {
-          updateFavorite(projectId, v.toggleFavoriteProject)
+    toggleFavorite: favoritedProjectIds
+      ? (projectId: string) => {
+          mutateAsync({ projectId }).then((v) =>
+            updateFavorite?.(projectId, v.toggleFavoriteProject)
+          )
         }
-      })
-    },
+      : undefined,
   }
 }

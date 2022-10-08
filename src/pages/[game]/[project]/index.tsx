@@ -28,6 +28,7 @@ type Props = {
   authors: User[]
   canManage: boolean
   isFavorited: boolean
+  canFavorite: boolean
 }
 
 const projectVisible = async (project: Project, maybeUser: Maybe<User>) => {
@@ -75,6 +76,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (context) =>
         authors: project.projectAuthorships.map((a) => a.user),
         canManage,
         isFavorited,
+        canFavorite: !!user,
       },
     }
   })
@@ -82,29 +84,29 @@ export const getServerSideProps: GetServerSideProps<Props> = async (context) =>
 type FavoritesProps = {
   state: FavoriteState
   projectId: string
+  canFavorite: boolean
 }
 const Favorites: FC<FavoritesProps> = ({
   state: { favorited, count },
   projectId,
+  canFavorite,
 }) => {
   const { mutateAsync } = useToggleFavoriteProjectMutation()
   const [serverFavorited, setServerFavorited] = useState(favorited)
-  const { localFavoriteState, toggleFavorite } = useFavoriteState({
-    favorited: serverFavorited,
-    count,
-  })
-
-  return (
-    <FavoriteButton
-      state={localFavoriteState}
-      onToggle={() => {
-        toggleFavorite()
-        mutateAsync({ projectId: projectId }).then((r) =>
-          setServerFavorited(r.toggleFavoriteProject)
-        )
-      }}
-    />
+  const { localFavoriteState, toggleFavorite } = useFavoriteState(
+    {
+      favorited: serverFavorited,
+      count,
+    },
+    canFavorite
+      ? () =>
+          mutateAsync({ projectId: projectId }).then((r) =>
+            setServerFavorited(r.toggleFavoriteProject)
+          )
+      : undefined
   )
+
+  return <FavoriteButton state={localFavoriteState} onToggle={toggleFavorite} />
 }
 
 export default function ProjectPage({
@@ -112,18 +114,20 @@ export default function ProjectPage({
   authors,
   canManage,
   isFavorited,
+  canFavorite,
 }: Props) {
   const Header = () => (
     <div className='flex flex-col gap-y-2'>
       <PageTitle
         rightElement={
-          <div className='flex flex-row gap-x-7 items-center'>
+          <div className='flex flex-row gap-x-10 items-center'>
             <Favorites
               state={{
                 count: project._count.favoritedBy,
                 favorited: isFavorited,
               }}
               projectId={project.id}
+              canFavorite={canFavorite}
             />
             {canManage && (
               <LinkButton

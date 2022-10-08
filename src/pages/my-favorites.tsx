@@ -51,7 +51,7 @@ export default function MyFavoritesPage({ projects }: Props) {
             favorited: isFavorited(project.id),
             count: project._count.favoritedBy,
           }}
-          onFavoriteToggle={() => toggleFavorite(project.id)}
+          onFavoriteToggle={() => toggleFavorite?.(project.id)}
         />
       ))}
     </div>

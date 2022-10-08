@@ -99,7 +99,9 @@ export default function GamePage({ game, favoritedProjectIds }: Props) {
               count: project._count.favoritedBy,
               favorited: isFavorited(project.id),
             }}
-            onFavoriteToggle={() => toggleFavorite(project.id)}
+            onFavoriteToggle={
+              toggleFavorite ? () => toggleFavorite(project.id) : undefined
+            }
           />
         ))}
       </div>

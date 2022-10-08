@@ -15,12 +15,9 @@ export const FavoriteButton: FC<FavoriteButtonProps> = ({
   <div className='flex flex-row gap-x-2 items-center'>
     <span className='font-bold'>{state.count}</span>
     <FontAwesomeIcon
-      onClick={() => {
-        if (onToggle) {
-          onToggle()
-        }
-      }}
-      className={classNames('text-2xl cursor-pointer', {
+      onClick={onToggle}
+      className={classNames('text-2xl', {
+        'cursor-pointer': onToggle,
         'text-primary': state.favorited,
         'hover:text-primary': !state.favorited && onToggle,
       })}
