@@ -20,6 +20,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   processProjectRequest: Maybe<Scalars['Boolean']>;
   requestProject: Scalars['Boolean'];
+  toggleFavoriteProject: Scalars['Boolean'];
   updateOwnUser: User;
   updateProject: Scalars['Boolean'];
 };
@@ -34,6 +35,11 @@ export type MutationProcessProjectRequestArgs = {
 
 export type MutationRequestProjectArgs = {
   data: ProjectRequestInput;
+};
+
+
+export type MutationToggleFavoriteProjectArgs = {
+  projectId: Scalars['ID'];
 };
 
 
@@ -233,6 +239,7 @@ export type ConstraintDirectiveResolver<Result, Parent, ContextType = Context, A
 export type MutationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   processProjectRequest: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationProcessProjectRequestArgs, 'isAccepted' | 'requestId'>>;
   requestProject: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationRequestProjectArgs, 'data'>>;
+  toggleFavoriteProject: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationToggleFavoriteProjectArgs, 'projectId'>>;
   updateOwnUser: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUpdateOwnUserArgs, 'data'>>;
   updateProject: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationUpdateProjectArgs, 'data' | 'projectId'>>;
 }>;

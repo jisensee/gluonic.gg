@@ -170,6 +170,38 @@ export const resolvers: Resolvers = {
         }
         return true
       }),
+    toggleFavoriteProject: (_, { projectId }, context) =>
+      requireUserGql(context, async (user) => {
+        const favoritedProjects = await db.user
+          .findUnique({
+            where: { id: user.id },
+            include: { favoritedProjects: true },
+          })
+          .then((u) => u?.favoritedProjects)
+        const project = await db.project.findUnique({
+          where: { id: projectId },
+        })
+        if (!favoritedProjects || !project) {
+          throw UserInputError
+        }
+        if (favoritedProjects.find((p) => p.id === projectId)) {
+          await db.user.update({
+            where: { id: user.id },
+            data: {
+              favoritedProjects: {
+                disconnect: { id: projectId },
+              },
+            },
+          })
+          return false
+        } else {
+          await db.user.update({
+            where: { id: user.id },
+            data: { favoritedProjects: { connect: { id: project.id } } },
+          })
+          return true
+        }
+      }),
   },
   User: {
     id: (user) => user.id,

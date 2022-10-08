@@ -39,6 +39,7 @@ model Project {
   socialsId          String
   published          Boolean              @default(false)
   lastUpdate         DateTime?
+  favoritedBy        User[]
 }
 
 model ProjectPost {
@@ -66,6 +67,7 @@ model User {
   projectAuthorships ProjectAuthorships[]
   projectRequests    ProjectRequest[]
   socialsId          String
+  favoritedProjects  Project[]
 }
 
 enum ProjectAuthorRole {

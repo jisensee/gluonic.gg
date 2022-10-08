@@ -37,6 +37,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   processProjectRequest?: Maybe<Scalars['Boolean']>;
   requestProject: Scalars['Boolean'];
+  toggleFavoriteProject: Scalars['Boolean'];
   updateOwnUser: User;
   updateProject: Scalars['Boolean'];
 };
@@ -51,6 +52,11 @@ export type MutationProcessProjectRequestArgs = {
 
 export type MutationRequestProjectArgs = {
   data: ProjectRequestInput;
+};
+
+
+export type MutationToggleFavoriteProjectArgs = {
+  projectId: Scalars['ID'];
 };
 
 
@@ -170,6 +176,13 @@ export type ProcessProjectRequestMutationVariables = Exact<{
 
 export type ProcessProjectRequestMutation = { __typename?: 'Mutation', processProjectRequest?: boolean | null | undefined };
 
+export type ToggleFavoriteProjectMutationVariables = Exact<{
+  projectId: Scalars['ID'];
+}>;
+
+
+export type ToggleFavoriteProjectMutation = { __typename?: 'Mutation', toggleFavoriteProject: boolean };
+
 export const OwnUserDataFragmentDoc = `
     fragment OwnUserData on User {
   id
@@ -266,5 +279,19 @@ export const useProcessProjectRequestMutation = <
     useMutation<ProcessProjectRequestMutation, TError, ProcessProjectRequestMutationVariables, TContext>(
       ['ProcessProjectRequest'],
       (variables?: ProcessProjectRequestMutationVariables) => fetcher<ProcessProjectRequestMutation, ProcessProjectRequestMutationVariables>(ProcessProjectRequestDocument, variables)(),
+      options
+    );
+export const ToggleFavoriteProjectDocument = `
+    mutation ToggleFavoriteProject($projectId: ID!) {
+  toggleFavoriteProject(projectId: $projectId)
+}
+    `;
+export const useToggleFavoriteProjectMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(options?: UseMutationOptions<ToggleFavoriteProjectMutation, TError, ToggleFavoriteProjectMutationVariables, TContext>) =>
+    useMutation<ToggleFavoriteProjectMutation, TError, ToggleFavoriteProjectMutationVariables, TContext>(
+      ['ToggleFavoriteProject'],
+      (variables?: ToggleFavoriteProjectMutationVariables) => fetcher<ToggleFavoriteProjectMutation, ToggleFavoriteProjectMutationVariables>(ToggleFavoriteProjectDocument, variables)(),
       options
     );

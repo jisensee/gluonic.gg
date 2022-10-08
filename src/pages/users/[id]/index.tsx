@@ -1,16 +1,18 @@
 import { Game, Project, Socials, User } from '@prisma/client'
-import { GetServerSideProps, NextApiRequest } from 'next'
+import { GetServerSideProps } from 'next'
 import { Button } from 'react-daisyui'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEdit } from '@fortawesome/free-solid-svg-icons'
 import Head from 'next/head'
 import { db } from '@/server/db'
-import { AuthService } from '@/server/auth-service'
 import { SocialLinks } from '@/components/social-links'
 import { Link } from '@/components/link'
 import { ProjectCard } from '@/components/game-project-card'
 import { PageTitle } from '@/components/common/page-title'
 import { shortenAddress } from '@/format'
+import { withOptionalUser } from '@/server/server-utils'
+import { UserService } from '@/server/user-service'
+import { useFavoriteProjectsList } from '@/hooks/favorite-hooks'
 
 type Props = {
   user: User
@@ -18,44 +20,63 @@ type Props = {
   projects: (Project & {
     socials: Socials
     game: Game
+    _count: { favoritedBy: number }
   })[]
   sameUser: boolean
+  favoritedProjectIds?: string[]
 }
 
-export const getServerSideProps: GetServerSideProps<Props> = async (
-  context
-) => {
-  const id = context.query['id'] as string
-  const user = await db.user.findUnique({
-    where: { id },
-    include: {
-      socials: true,
-      projectAuthorships: {
-        where: { project: { published: true } },
-        include: { project: { include: { game: true, socials: true } } },
+export const getServerSideProps: GetServerSideProps<Props> = (context) =>
+  withOptionalUser(context, async (maybeUser) => {
+    const id = context.query['id'] as string
+    const requestingUser = maybeUser.extract()
+    const favoritedProjectIds = requestingUser
+      ? await UserService.findFavoritedProjectIds(requestingUser)
+      : undefined
+    const user = await db.user.findUnique({
+      where: { id },
+      include: {
+        socials: true,
+        projectAuthorships: {
+          where: { project: { published: true } },
+          include: {
+            project: {
+              include: {
+                game: true,
+                socials: true,
+                _count: { select: { favoritedBy: true } },
+              },
+            },
+          },
+        },
       },
-    },
+    })
+    if (!user) {
+      return Promise.resolve({ notFound: true })
+    }
+
+    const sameUser = maybeUser.mapOrDefault((u) => u.id === user.id, false)
+
+    return {
+      props: {
+        sameUser,
+        user,
+        projects: user.projectAuthorships.map((a) => a.project),
+        socials: user.socials,
+        favoritedProjectIds,
+      },
+    }
   })
-  if (!user) {
-    return { notFound: true }
-  }
 
-  const requestingUser = await AuthService.findUserFromRequest(
-    context.req as NextApiRequest
-  )
-  const sameUser = requestingUser.mapOrDefault((u) => u.id === user.id, false)
-
-  return {
-    props: {
-      sameUser,
-      user,
-      projects: user.projectAuthorships.map((a) => a.project),
-      socials: user.socials,
-    },
-  }
-}
-
-export default function UserPage({ user, socials, projects, sameUser }: Props) {
+export default function UserPage({
+  user,
+  socials,
+  projects,
+  sameUser,
+  favoritedProjectIds,
+}: Props) {
+  const { isFavorited, toggleFavorite } =
+    useFavoriteProjectsList(favoritedProjectIds)
   return (
     <div className='flex flex-col gap-y-3'>
       <Head>
@@ -99,6 +120,11 @@ export default function UserPage({ user, socials, projects, sameUser }: Props) {
               project={project}
               game={project.game}
               socials={project.socials}
+              favoriteState={{
+                count: project._count.favoritedBy,
+                favorited: isFavorited(project.id),
+              }}
+              onFavoriteToggle={() => toggleFavorite(project.id)}
             />
           ))}
         </div>

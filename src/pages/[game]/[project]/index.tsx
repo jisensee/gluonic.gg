@@ -5,6 +5,7 @@ import { Button } from 'react-daisyui'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Maybe } from 'purify-ts'
 import Head from 'next/head'
+import { FC, useState } from 'react'
 import { db } from '@/server/db'
 import { SocialLinks } from '@/components/social-links'
 import { Markdown } from '@/components/markdown'
@@ -14,14 +15,19 @@ import { Link } from '@/components/link'
 import { GameLink } from '@/components/common/game-link'
 import { PageTitle } from '@/components/common/page-title'
 import { LinkButton } from '@/components/common/link-button'
+import { FavoriteState, useFavoriteState } from '@/hooks/favorite-hooks'
+import { useToggleFavoriteProjectMutation } from '@/generated/graphql-hooks'
+import { FavoriteButton } from '@/components/favorite-button'
 
 type Props = {
   project: Project & {
+    _count: { favoritedBy: number }
     socials: Socials
     game: Game
   }
   authors: User[]
   canManage: boolean
+  isFavorited: boolean
 }
 
 const projectVisible = async (project: Project, maybeUser: Maybe<User>) => {
@@ -41,6 +47,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (context) =>
     const project = await db.project.findFirst({
       where: { key: projectKey, game: { key: gameKey } },
       include: {
+        _count: { select: { favoritedBy: true } },
         socials: true,
         game: true,
         projectAuthorships: { include: { user: true } },
@@ -48,34 +55,86 @@ export const getServerSideProps: GetServerSideProps<Props> = async (context) =>
     })
 
     if (!project || !(await projectVisible(project, maybeUser))) {
-      return { notFound: true }
+      return Promise.resolve({ notFound: true })
     }
 
     const user = maybeUser.extract()
+    const isFavorited = user
+      ? await db.user
+          .findUnique({
+            where: { id: user.id },
+            include: { favoritedProjects: { where: { id: project.id } } },
+          })
+          .then((r) => r?.favoritedProjects ?? [])
+          .then((p) => p.length > 0)
+      : false
     const canManage = user ? await canUserManageProject(project, user) : false
     return {
       props: {
         project,
         authors: project.projectAuthorships.map((a) => a.user),
         canManage,
+        isFavorited,
       },
     }
   })
 
-export default function ProjectPage({ project, authors, canManage }: Props) {
+type FavoritesProps = {
+  state: FavoriteState
+  projectId: string
+}
+const Favorites: FC<FavoritesProps> = ({
+  state: { favorited, count },
+  projectId,
+}) => {
+  const { mutateAsync } = useToggleFavoriteProjectMutation()
+  const [serverFavorited, setServerFavorited] = useState(favorited)
+  const { localFavoriteState, toggleFavorite } = useFavoriteState({
+    favorited: serverFavorited,
+    count,
+  })
+
+  return (
+    <FavoriteButton
+      state={localFavoriteState}
+      onToggle={() => {
+        toggleFavorite()
+        mutateAsync({ projectId: projectId }).then((r) =>
+          setServerFavorited(r.toggleFavoriteProject)
+        )
+      }}
+    />
+  )
+}
+
+export default function ProjectPage({
+  project,
+  authors,
+  canManage,
+  isFavorited,
+}: Props) {
   const Header = () => (
     <div className='flex flex-col gap-y-2'>
       <PageTitle
         rightElement={
-          canManage && (
-            <LinkButton
-              href={`/influence/${project.key}/manage`}
-              icon={faEdit}
-              button={{ color: 'primary' }}
-            >
-              Manage
-            </LinkButton>
-          )
+          <div className='flex flex-row gap-x-7 items-center'>
+            <Favorites
+              state={{
+                count: project._count.favoritedBy,
+                favorited: isFavorited,
+              }}
+              projectId={project.id}
+            />
+            {canManage && (
+              <LinkButton
+                href={`/influence/${project.key}/manage`}
+                icon={faEdit}
+                button={{ color: 'primary' }}
+              >
+                Manage
+              </LinkButton>
+            )}
+          </div>
         }
       >
         <Link href={project.website} external>

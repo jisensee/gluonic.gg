@@ -6,42 +6,56 @@ import { db } from '@/server/db'
 import { ProjectCard } from '@/components/game-project-card'
 import { LinkButton } from '@/components/common/link-button'
 import { SocialLinks } from '@/components/social-links'
+import { withOptionalUser } from '@/server/server-utils'
+import { UserService } from '@/server/user-service'
+import { useFavoriteProjectsList } from '@/hooks/favorite-hooks'
 
 type Props = {
   game: Game & {
     socials: Socials
-    projects: (Project & { socials: Socials })[]
+    projects: (Project & {
+      socials: Socials
+      _count: { favoritedBy: number }
+    })[]
   }
+  favoritedProjectIds?: string[]
 }
 
-export const getServerSideProps: GetServerSideProps<Props> = async (
-  context
-) => {
-  const key = context.query['game'] as string
-  const game = await db.game.findUnique({
-    where: { key },
-    include: {
-      socials: true,
-      projects: {
-        where: { published: true },
-        include: { socials: true },
-        orderBy: [
-          {
-            lastUpdate: 'desc',
-          },
-        ],
+export const getServerSideProps: GetServerSideProps<Props> = (context) =>
+  withOptionalUser(context, async (maybeUser) => {
+    const key = context.query['game'] as string
+
+    const user = maybeUser.extract()
+    const favoritedProjectIds = user
+      ? await UserService.findFavoritedProjectIds(user)
+      : undefined
+
+    const game = await db.game.findUnique({
+      where: { key },
+      include: {
+        socials: true,
+        projects: {
+          where: { published: true },
+          include: { socials: true, _count: { select: { favoritedBy: true } } },
+          orderBy: [
+            {
+              lastUpdate: 'desc',
+            },
+          ],
+        },
       },
-    },
+    })
+
+    return game
+      ? {
+          props: { game, favoritedProjectIds },
+        }
+      : Promise.resolve({ notFound: true })
   })
 
-  return game
-    ? {
-        props: { game },
-      }
-    : { notFound: true }
-}
-
-export default function GamePage({ game }: Props) {
+export default function GamePage({ game, favoritedProjectIds }: Props) {
+  const { isFavorited, toggleFavorite } =
+    useFavoriteProjectsList(favoritedProjectIds)
   return (
     <>
       <Head>
@@ -81,6 +95,11 @@ export default function GamePage({ game }: Props) {
             project={project}
             game={game}
             socials={project.socials}
+            favoriteState={{
+              count: project._count.favoritedBy,
+              favorited: isFavorited(project.id),
+            }}
+            onFavoriteToggle={() => toggleFavorite(project.id)}
           />
         ))}
       </div>

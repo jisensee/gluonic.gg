@@ -3,6 +3,7 @@ import {
   faAngleDown,
   faCogs,
   faSignOut,
+  faStar,
   faTableList,
   faUser,
   IconDefinition,
@@ -55,7 +56,7 @@ export const UserMenu: FC<UserMenuProps> = ({ signOut, name }) => {
       </Dropdown.Toggle>
       <Dropdown.Menu className='right-0 w-fit bg-base-200 border border-primary whitespace-nowrap'>
         <Item href='/profile' icon={faUser}>
-          My profile
+          My Profile
         </Item>
         {user?.isAdmin && (
           <Item href='/admin' icon={faCogs}>
@@ -63,10 +64,13 @@ export const UserMenu: FC<UserMenuProps> = ({ signOut, name }) => {
           </Item>
         )}
         <Item href='/my-projects' icon={faTableList}>
-          My projects
+          My Projects
+        </Item>
+        <Item href='/my-favorites' icon={faStar}>
+          My Favorites
         </Item>
         <Item href='/request-project' icon={faAdd}>
-          Request project
+          Request Project
         </Item>
         <Dropdown.Item onClick={signOut}>
           <FontAwesomeIcon icon={faSignOut} fixedWidth />

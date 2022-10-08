@@ -18,6 +18,7 @@ type Mutation {
     isAccepted: Boolean!
     projectKey: String
   ): Boolean
+  toggleFavoriteProject(projectId: ID!): Boolean!
 }
 
 input SocialsInput {

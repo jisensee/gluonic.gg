@@ -24,8 +24,17 @@ const findSocials = (user: User) =>
     db.user.findUnique({ where: { id: user.id }, include: { socials: true } })
   ).map((u) => u.socials)
 
+const findFavoritedProjectIds = async (user: User) =>
+  (await db.user
+    .findUnique({
+      where: { id: user.id },
+      include: { favoritedProjects: true },
+    })
+    .then((u) => u?.favoritedProjects.map((p) => p.id))) ?? []
+
 export const UserService = {
   findById,
   findOrCreate,
   findSocials,
+  findFavoritedProjectIds,
 }

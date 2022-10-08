@@ -10,6 +10,8 @@ import { FC, ReactNode } from 'react'
 import { Button, Card } from 'react-daisyui'
 import { Link } from './link'
 import { SocialLinks } from './social-links'
+import { FavoriteButton } from './favorite-button'
+import { FavoriteState, useFavoriteState } from '@/hooks/favorite-hooks'
 
 export type GameProjectCardProps = {
   className?: string
@@ -21,6 +23,8 @@ export type GameProjectCardProps = {
   logoUrl: string
   website: string
   socials: Socials
+  favoriteState?: FavoriteState
+  onFavoriteToggle?: () => void
 }
 export const GameProjectCard: FC<GameProjectCardProps> = ({
   detailLink,
@@ -31,6 +35,8 @@ export const GameProjectCard: FC<GameProjectCardProps> = ({
   logoUrl,
   website,
   socials,
+  favoriteState,
+  onFavoriteToggle,
   className,
 }) => (
   <Card
@@ -48,7 +54,7 @@ export const GameProjectCard: FC<GameProjectCardProps> = ({
           alt={`${title} logo`}
         />
       </Link>
-      <div className='flex flex-row gap-x-5 flex-wrap items-center'>
+      <div className='flex flex-row gap-x-5 flex-wrap items-center grow'>
         <h2 className='text-primary'>{title}</h2>
         <SocialLinks
           className='flex md:hidden flex-row gap-x-5 text-2xl'
@@ -60,6 +66,9 @@ export const GameProjectCard: FC<GameProjectCardProps> = ({
           socials={socials}
         />
       </div>
+      {favoriteState && (
+        <FavoriteButton state={favoriteState} onToggle={onFavoriteToggle} />
+      )}
     </div>
     <p>{abstract}</p>
     <div className='flex flex-col sm:flex-row items-center justify-center gap-x-5 gap-y-3'>
@@ -87,21 +96,33 @@ export type ProjectCardProps = {
   project: Project
   socials: Socials
   game: Game
+  favoriteState: FavoriteState
+  onFavoriteToggle?: () => void
 }
 export const ProjectCard: FC<ProjectCardProps> = ({
   project,
   game,
   socials,
-}) => (
-  <GameProjectCard
-    key={project.id}
-    title={project.name}
-    abstract={project.abstract}
-    website={project.website}
-    logoUrl={project.logoUrl ?? game.logoUrl}
-    detailLink={`/${game.key}/${project.key}`}
-    detailText='Show project page'
-    detailIcon={faMagnifyingGlass}
-    socials={socials}
-  />
-)
+  favoriteState,
+  onFavoriteToggle,
+}) => {
+  const { localFavoriteState, toggleFavorite } = useFavoriteState(
+    favoriteState,
+    onFavoriteToggle
+  )
+  return (
+    <GameProjectCard
+      key={project.id}
+      title={project.name}
+      abstract={project.abstract}
+      website={project.website}
+      logoUrl={project.logoUrl ?? game.logoUrl}
+      detailLink={`/${game.key}/${project.key}`}
+      detailText='Show project page'
+      detailIcon={faMagnifyingGlass}
+      socials={socials}
+      favoriteState={localFavoriteState}
+      onFavoriteToggle={toggleFavorite}
+    />
+  )
+}

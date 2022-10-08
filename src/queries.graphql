@@ -45,3 +45,7 @@ mutation ProcessProjectRequest(
     projectKey: $projectKey
   )
 }
+
+mutation ToggleFavoriteProject($projectId: ID!) {
+  toggleFavoriteProject(projectId: $projectId)
+}
