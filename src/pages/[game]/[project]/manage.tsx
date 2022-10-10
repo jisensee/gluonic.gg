@@ -2,7 +2,6 @@ import { Game, Project, Socials } from '@prisma/client'
 import { GetServerSideProps, GetServerSidePropsResult } from 'next'
 import { Tabs } from 'react-daisyui'
 import { useState } from 'react'
-import classNames from 'classnames'
 
 import Head from 'next/head'
 import { canUserManageProject, withUser } from '@/server/server-utils'
@@ -13,6 +12,7 @@ import { ProjectSocialsForm } from '@/components/manage-project-page/project-soc
 import { ProjectDonationsForm } from '@/components/manage-project-page/project-donations-form'
 import { PageTitle } from '@/components/common/page-title'
 import { LinkButton } from '@/components/common/link-button'
+import { ProjectImagesForm } from '@/components/manage-project-page/project-images-form'
 
 type Props = {
   project: Project & {
@@ -38,7 +38,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (context) =>
     return { notFound: true }
   })
 
-type ActiveTab = 'data' | 'socials' | 'donations'
+type ActiveTab = 'data' | 'socials' | 'donations' | 'images'
 
 export default function ManageProjectPage({ project }: Props) {
   const [tab, setTab] = useState<ActiveTab>('data')
@@ -63,10 +63,11 @@ export default function ManageProjectPage({ project }: Props) {
       <Tabs value={tab} onChange={setTab} size='lg' boxed color='primary'>
         <Tabs.Tab value='data'>Data</Tabs.Tab>
         <Tabs.Tab value='socials'>Socials</Tabs.Tab>
+        <Tabs.Tab value='images'>Images</Tabs.Tab>
         <Tabs.Tab value='donations'>Donations</Tabs.Tab>
       </Tabs>
       <ProjectBaseDataForm
-        className={classNames(tab === 'data' ? 'flex' : 'hidden')}
+        className={tab === 'data' ? 'flex' : 'hidden'}
         projectId={project.id}
         initialData={{
           abstract: project.abstract,
@@ -76,7 +77,7 @@ export default function ManageProjectPage({ project }: Props) {
         }}
       />
       <ProjectSocialsForm
-        className={classNames(tab === 'socials' ? 'flex' : 'hidden')}
+        className={tab === 'socials' ? 'flex' : 'hidden'}
         projectId={project.id}
         initialData={{
           discord: project.socials.discord ?? '',
@@ -84,8 +85,13 @@ export default function ManageProjectPage({ project }: Props) {
           twitter: project.socials.twitter ?? '',
         }}
       />
+      <ProjectImagesForm
+        className={tab === 'images' ? 'flex' : 'hidden'}
+        projectId={project.id}
+        initialData={{ logoUrl: project.logoUrl ?? project.game.logoUrl }}
+      />
       <ProjectDonationsForm
-        className={classNames(tab === 'donations' ? 'flex' : 'hidden')}
+        className={tab === 'donations' ? 'flex' : 'hidden'}
         projectId={project.id}
         initialData={{ donationAddress: project.donationAddress }}
       />

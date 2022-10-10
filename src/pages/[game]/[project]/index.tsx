@@ -13,7 +13,6 @@ import { DonationButton } from '@/components/donation-button'
 import { canUserManageProject, withOptionalUser } from '@/server/server-utils'
 import { Link } from '@/components/link'
 import { GameLink } from '@/components/common/game-link'
-import { PageTitle } from '@/components/common/page-title'
 import { LinkButton } from '@/components/common/link-button'
 import { FavoriteState, useFavoriteState } from '@/hooks/favorite-hooks'
 import { useToggleFavoriteProjectMutation } from '@/generated/graphql-hooks'
@@ -118,33 +117,33 @@ export default function ProjectPage({
 }: Props) {
   const Header = () => (
     <div className='flex flex-col gap-y-2'>
-      <PageTitle
-        rightElement={
-          <div className='flex flex-row gap-x-10 items-center'>
-            <Favorites
-              state={{
-                count: project._count.favoritedBy,
-                favorited: isFavorited,
-              }}
-              projectId={project.id}
-              canFavorite={canFavorite}
-            />
-            {canManage && (
-              <LinkButton
-                href={`/influence/${project.key}/manage`}
-                icon={faEdit}
-                button={{ color: 'primary' }}
-              >
-                Manage
-              </LinkButton>
-            )}
-          </div>
-        }
-      >
-        <Link href={project.website} external>
-          <h1>{project.name}</h1>
-        </Link>
-      </PageTitle>
+      <div className='flex flex-row justify-between flex-wrap gap-3'>
+        <div className='flex flex-row gap-x-5 items-center'>
+          <img className='h-16' src={project.logoUrl ?? project.game.logoUrl} />
+          <Link href={project.website} external>
+            <h1>{project.name}</h1>
+          </Link>
+        </div>
+        <div className='flex flex-row gap-x-8 items-center'>
+          <Favorites
+            state={{
+              count: project._count.favoritedBy,
+              favorited: isFavorited,
+            }}
+            projectId={project.id}
+            canFavorite={canFavorite}
+          />
+          {canManage && (
+            <LinkButton
+              href={`/influence/${project.key}/manage`}
+              icon={faEdit}
+              button={{ color: 'primary' }}
+            >
+              Manage
+            </LinkButton>
+          )}
+        </div>
+      </div>
       <GameLink
         className='self-start'
         gameKey={project.game.key}

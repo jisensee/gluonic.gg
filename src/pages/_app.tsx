@@ -32,7 +32,9 @@ const wagmiClient = createClient({
   provider: getDefaultProvider(),
 })
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { refetchOnWindowFocus: false } },
+})
 
 const Providers = ({
   pageProps,
