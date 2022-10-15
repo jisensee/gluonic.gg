@@ -3,7 +3,7 @@ import { GetServerSideProps } from 'next'
 import { FC } from 'react'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { Button, Input, Select } from 'react-daisyui'
+import { Button, Input, Select, Textarea } from 'react-daisyui'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons'
 import { useRouter } from 'next/router'
@@ -68,7 +68,7 @@ const ProjectRequestForm: FC<ProjectRequestFormProps> = ({
         error={errors['abstract']}
         infoMessage={`A short description of your project. Don't worry, you will be able to change this later.`}
       >
-        <Input {...register('abstract')} />
+        <Textarea {...register('abstract')} />
       </FormField>
       <FormField
         label='Project website'
