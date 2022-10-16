@@ -133,6 +133,10 @@ export const resolvers: Resolvers = {
       context
     ) =>
       requireUserGql(context, async (user) => {
+        if (user.role !== 'ADMIN') {
+          throw ForbiddenError
+        }
+
         const request = await db.projectRequest.findUnique({
           where: { id: requestId },
           include: { game: true },
@@ -151,7 +155,7 @@ export const resolvers: Resolvers = {
                 website: request.projectWebsite,
                 game: { connect: { id: request.game.id } },
                 projectAuthorships: {
-                  create: { type: 'ADMIN', userId: user.id },
+                  create: { type: 'ADMIN', userId: request.userId },
                 },
                 socials: { create: {} },
               },
