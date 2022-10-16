@@ -11,7 +11,15 @@ type Props = {
 }
 export const getStaticProps: GetStaticProps<Props> = async () => {
   const games = await db.game.findMany({
-    include: { socials: true, _count: { select: { projects: true } } },
+    include: {
+      socials: true, _count: {
+        select: {
+          projects: {
+            where: { published: true }
+          }
+        }
+      }
+    },
   })
   return {
     props: {
