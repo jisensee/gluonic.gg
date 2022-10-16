@@ -19,7 +19,8 @@ export const FavoriteButton: FC<FavoriteButtonProps> = ({
       className={classNames('text-2xl', {
         'cursor-pointer': onToggle,
         'text-primary': state.favorited,
-        'hover:text-primary': !state.favorited && onToggle,
+        'hover:text-current': onToggle && state.favorited,
+        'hover:text-primary': onToggle && !state.favorited,
       })}
       icon={faStar}
     />
