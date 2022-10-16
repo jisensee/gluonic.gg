@@ -11,10 +11,12 @@ module.exports = {
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
     'plugin:import/typescript',
+    'next',
   ],
   rules: {
     'unused-imports/no-unused-imports': 'error',
     'import/order': 'error',
     'no-console': 'error',
+    '@next/next/no-img-element': 'off',
   },
 }

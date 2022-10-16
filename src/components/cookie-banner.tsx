@@ -13,8 +13,7 @@ export const CookieBanner = () => {
   }
   return visible ? (
     <div className='fixed bottom-0 w-full flex flex-row gap-x-3 items-center justify-between bg-base-300 p-3'>
-      This website uses cookies only for authentication purposes if you actively
-      sign in. That's it.
+      {'This website uses cookies only for authentication purposes if you actively sign in. That\'s it.'}
       <Button onClick={onAccept} color='primary'>
         I understand
       </Button>

@@ -19,7 +19,7 @@ export type AuthContext = {
 
 const Context = React.createContext<AuthContext>({
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  updateUser: () => {},
+  updateUser: () => { },
   loading: true,
 })
 
@@ -41,7 +41,7 @@ export const AuthContextProvider: FC<PropsWithChildren> = ({ children }) => {
         })
         .finally(() => setUserLoading(false))
     }
-  }, [status])
+  }, [status, fetchUser])
 
   const value: AuthContext = {
     user,

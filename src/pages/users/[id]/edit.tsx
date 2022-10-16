@@ -156,7 +156,7 @@ export default function UserEditPage() {
     if (data && user && data.updateOwnUser.name !== user.name) {
       updateUser(data.updateOwnUser)
     }
-  }, [data])
+  }, [data, updateUser, user])
 
   return user ? (
     <UserDataForm

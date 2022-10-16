@@ -128,7 +128,7 @@ export default function MyProjectsPage({ projects, projectRequests }: Props) {
         >
           My Projects
         </PageTitle>
-        {projects.length === 0 && <p>You don't manage any projects yet.</p>}
+        {projects.length === 0 && <p>{'You don\'t manage any projects yet.'}</p>}
         {projects.map((project) => (
           <ProjectCard
             key={project.id}

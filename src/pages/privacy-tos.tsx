@@ -38,7 +38,7 @@ export default function TermsOfServicePage() {
 
       <h2>Disclaimer</h2>
       <p>
-        All the materials on Gluonic’s Website are provided "as is". Gluonic
+        All the materials on Gluonic’s Website are provided &quot;as is&quot;. Gluonic
         makes no warranties, may it be expressed or implied, therefore negates
         all other warranties. Furthermore, Gluonic does not make any
         representations concerning the accuracy or reliability of the use of the

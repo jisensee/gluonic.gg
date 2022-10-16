@@ -53,11 +53,12 @@ export const IconInput: FC<IconInputProps> = ({
 
 export const SaveButton = (props: ButtonProps) => (
   <Button
-    children='Save'
     startIcon={<FontAwesomeIcon icon={faSave} />}
     color='primary'
     {...props}
-  />
+  >
+    Save
+  </Button>
 )
 
 export const errorColor = (

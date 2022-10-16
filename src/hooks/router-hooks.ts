@@ -16,6 +16,7 @@ export const useIsPageLoading = () => {
       router.events.off('routeChangeComplete', handleEnd)
       router.events.off('routeChangeError', handleError)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   return isLoading
 }

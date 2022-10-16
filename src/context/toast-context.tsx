@@ -33,6 +33,7 @@ const Toast: FC<ToastProps> = ({ config, onClose }) => {
       const timeout = config.timeout ?? 5000
       setInterval(onClose, timeout)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   return (
     <Alert status={config.status}>
@@ -52,7 +53,7 @@ const Toast: FC<ToastProps> = ({ config, onClose }) => {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
-const Context = createContext<ToastContext>({ showToast: () => {} })
+const Context = createContext<ToastContext>({ showToast: () => { } })
 
 export const useToast = () => useContext(Context)
 
@@ -134,5 +135,6 @@ export const useStatusToast = (
         ...config['warning'],
       })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status])
 }

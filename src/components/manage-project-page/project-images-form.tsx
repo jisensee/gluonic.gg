@@ -44,7 +44,7 @@ export const ProjectImagesForm: FC<ProjectImagesFormProps> = ({
       showToast({ status: 'success', title: 'Logo has been updated!' })
       setLogoUrl(data.url)
     }
-  }, [data, error])
+  }, [data, error, showToast])
 
   const onSubmit = (data: FormState) => {
     if (data.logo?.length === 1) {

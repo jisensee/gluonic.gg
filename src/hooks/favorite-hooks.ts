@@ -47,18 +47,18 @@ export const useFavoriteState = (
     serverState
   )
   useEffect(() => {
-    if (serverState) {
+    if (serverState?.favorited !== undefined) {
       dispatchFavAction({ type: 'merge', favorited: serverState.favorited })
     }
-  }, [serverState?.favorited])
+  }, [serverState.favorited])
 
   return {
     localFavoriteState: localState,
     toggleFavorite: serverToggle
       ? () => {
-          dispatchFavAction({ type: 'toggle' })
-          serverToggle()
-        }
+        dispatchFavAction({ type: 'toggle' })
+        serverToggle()
+      }
       : undefined,
   }
 }
@@ -69,14 +69,14 @@ export const useFavoriteProjectsList = (favoritedProjectIds?: string[]) => {
     useState(favoritedProjectIds)
   const updateFavorite = favoritedProjects
     ? (projectId: string, favorited: boolean) =>
-        setFavoritedProjects((prev) => {
-          const old = prev ?? []
-          if (favorited) {
-            return [...old, projectId]
-          } else {
-            return old.filter((id) => id !== projectId)
-          }
-        })
+      setFavoritedProjects((prev) => {
+        const old = prev ?? []
+        if (favorited) {
+          return [...old, projectId]
+        } else {
+          return old.filter((id) => id !== projectId)
+        }
+      })
     : undefined
 
   return {
@@ -84,10 +84,10 @@ export const useFavoriteProjectsList = (favoritedProjectIds?: string[]) => {
       favoritedProjects?.includes(projectId) ?? false,
     toggleFavorite: favoritedProjectIds
       ? (projectId: string) => {
-          mutateAsync({ projectId }).then((v) =>
-            updateFavorite?.(projectId, v.toggleFavoriteProject)
-          )
-        }
+        mutateAsync({ projectId }).then((v) =>
+          updateFavorite?.(projectId, v.toggleFavoriteProject)
+        )
+      }
       : undefined,
   }
 }

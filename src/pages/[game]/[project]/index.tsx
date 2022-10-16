@@ -61,12 +61,12 @@ export const getServerSideProps: GetServerSideProps<Props> = async (context) =>
     const user = maybeUser.extract()
     const isFavorited = user
       ? await db.user
-          .findUnique({
-            where: { id: user.id },
-            include: { favoritedProjects: { where: { id: project.id } } },
-          })
-          .then((r) => r?.favoritedProjects ?? [])
-          .then((p) => p.length > 0)
+        .findUnique({
+          where: { id: user.id },
+          include: { favoritedProjects: { where: { id: project.id } } },
+        })
+        .then((r) => r?.favoritedProjects ?? [])
+        .then((p) => p.length > 0)
       : false
     const canManage = user ? await canUserManageProject(project, user) : false
     return {
@@ -99,9 +99,9 @@ const Favorites: FC<FavoritesProps> = ({
     },
     canFavorite
       ? () =>
-          mutateAsync({ projectId: projectId }).then((r) =>
-            setServerFavorited(r.toggleFavoriteProject)
-          )
+        mutateAsync({ projectId: projectId }).then((r) =>
+          setServerFavorited(r.toggleFavoriteProject)
+        )
       : undefined
   )
 
@@ -119,7 +119,11 @@ export default function ProjectPage({
     <div className='flex flex-col gap-y-2'>
       <div className='flex flex-row justify-between flex-wrap gap-3'>
         <div className='flex flex-row gap-x-5 items-center'>
-          <img className='h-16' src={project.logoUrl ?? project.game.logoUrl} />
+          <img
+            className='h-16'
+            src={project.logoUrl ?? project.game.logoUrl}
+            alt={`${project.name} logo`}
+          />
           <Link href={project.website} external>
             <h1>{project.name}</h1>
           </Link>
