@@ -14,15 +14,8 @@ export const FavoriteButton: FC<FavoriteButtonProps> = ({
   state,
   onToggle,
   className,
-}) => (
-  <Tooltip
-    className={classNames(
-      'text-md whitespace-nowrap mr-4',
-      onToggle && 'hidden'
-    )}
-    position='left'
-    content='Sign in to favorite projects'
-  >
+}) => {
+  const content = (
     <div
       className={classNames('flex flex-row gap-x-2 items-center', className)}
     >
@@ -37,5 +30,16 @@ export const FavoriteButton: FC<FavoriteButtonProps> = ({
         icon={faStar}
       />
     </div>
-  </Tooltip>
-)
+  )
+  return onToggle ? (
+    content
+  ) : (
+    <Tooltip
+      className='text-md whitespace-nowrap mr-4'
+      position='left'
+      content='Sign in to favorite projects'
+    >
+      {content}
+    </Tooltip>
+  )
+}
