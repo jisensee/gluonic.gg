@@ -14,7 +14,7 @@ export function ProjectBaseDataInputSchema(): yup.SchemaOf<ProjectBaseDataInput>
     abstract: yup.string().required().max(500).label("Abstract"),
     description: yup.string().max(2000).label("Project description"),
     published: yup.boolean().defined(),
-    website: yup.string().required().max(64).label("Website")
+    website: yup.string().required().max(40).label("Website")
   })
 }
 
@@ -28,16 +28,16 @@ export function ProjectRequestInputSchema(): yup.SchemaOf<ProjectRequestInput> {
   return yup.object({
     abstract: yup.string().required().max(500).label("Project abstract"),
     gameId: yup.string().required(),
-    name: yup.string().required().max(64).label("Project name"),
-    website: yup.string().required().max(64).label("Project website")
+    name: yup.string().required().max(30).label("Project name"),
+    website: yup.string().required().max(40).label("Project website")
   })
 }
 
 export function ProjectSocialsInputSchema(): yup.SchemaOf<ProjectSocialsInput> {
   return yup.object({
-    discord: yup.string().max(64).label("Discord"),
-    github: yup.string().max(64).label("Github"),
-    twitter: yup.string().max(64).label("Twitter")
+    discord: yup.string().max(40).label("Discord"),
+    github: yup.string().max(80).label("Github"),
+    twitter: yup.string().max(40).label("Twitter")
   })
 }
 
@@ -51,9 +51,9 @@ export function ProjectUpdateInputSchema(): yup.SchemaOf<ProjectUpdateInput> {
 
 export function SocialsInputSchema(): yup.SchemaOf<SocialsInput> {
   return yup.object({
-    discord: yup.string().max(64).label("Discord"),
-    github: yup.string().max(64).label("Github"),
-    twitter: yup.string().max(64).label("Twitter"),
-    website: yup.string().max(64).label("Website")
+    discord: yup.string().max(40).label("Discord"),
+    github: yup.string().max(80).label("Github"),
+    twitter: yup.string().max(40).label("Twitter"),
+    website: yup.string().max(40).label("Website")
   })
 }

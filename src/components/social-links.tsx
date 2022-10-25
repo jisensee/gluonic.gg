@@ -8,8 +8,9 @@ import { faGlobe } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Socials } from '@prisma/client'
 import { FC, ReactNode } from 'react'
-import { Button, Tooltip } from 'react-daisyui'
+import { Button } from 'react-daisyui'
 import { Link } from './link'
+import { Tooltip, TooltipPosition } from './common/tooltip'
 import { useCopyButton } from '@/hooks/misc-hooks'
 
 const isUrl = (str: string) => {
@@ -25,6 +26,7 @@ type SocialLinksProps = {
   socials: Socials
   className?: string
   compact?: boolean
+  tooltipPosition?: TooltipPosition
 }
 
 type SocialLinkProps = {
@@ -32,8 +34,15 @@ type SocialLinkProps = {
   link: string
   compact?: boolean
   text: ReactNode
+  tooltipPosition?: TooltipPosition
 }
-const SocialLink: FC<SocialLinkProps> = ({ icon, link, compact, text }) => {
+const SocialLink: FC<SocialLinkProps> = ({
+  icon,
+  link,
+  compact,
+  text,
+  tooltipPosition,
+}) => {
   const { onCopy, buttonText } = useCopyButton(link, 'Copied!')
   return isUrl(link) ? (
     <>
@@ -53,7 +62,11 @@ const SocialLink: FC<SocialLinkProps> = ({ icon, link, compact, text }) => {
       )}
     </>
   ) : (
-    <Tooltip message='Click to copy'>
+    <Tooltip
+      content='Click to copy'
+      className={'text-sm'}
+      position={tooltipPosition}
+    >
       <Button
         className='hover:bg-primary hover:text-primary-content'
         startIcon={<FontAwesomeIcon icon={icon} size='2x' />}
@@ -75,6 +88,7 @@ export const SocialLinks: FC<SocialLinksProps> = ({
   socials,
   className,
   compact,
+  tooltipPosition,
 }) => (
   <div className={className}>
     {socials.website && (
@@ -83,6 +97,7 @@ export const SocialLinks: FC<SocialLinksProps> = ({
         icon={faGlobe}
         text='Website'
         compact={compact}
+        tooltipPosition={tooltipPosition}
       />
     )}
     {socials.twitter && (
@@ -91,6 +106,7 @@ export const SocialLinks: FC<SocialLinksProps> = ({
         icon={faTwitter}
         text='Twitter'
         compact={compact}
+        tooltipPosition={tooltipPosition}
       />
     )}
     {socials.discord && (
@@ -99,6 +115,7 @@ export const SocialLinks: FC<SocialLinksProps> = ({
         icon={faDiscord}
         text='Discord'
         compact={compact}
+        tooltipPosition={tooltipPosition}
       />
     )}
     {socials.github && (
@@ -107,6 +124,7 @@ export const SocialLinks: FC<SocialLinksProps> = ({
         icon={faGithub}
         text='Github'
         compact={compact}
+        tooltipPosition={tooltipPosition}
       />
     )}
   </div>

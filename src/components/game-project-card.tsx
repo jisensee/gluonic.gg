@@ -57,13 +57,15 @@ export const GameProjectCard: FC<GameProjectCardProps> = ({
       <div className='flex flex-row gap-x-5 flex-wrap items-center grow'>
         <h2 className='text-primary'>{title}</h2>
         <SocialLinks
-          className='flex md:hidden flex-row gap-x-5 text-2xl'
+          className='flex md:hidden flex-row gap-x-5 text-2xl items-center'
           socials={socials}
           compact
+          tooltipPosition='bottom'
         />
         <SocialLinks
-          className='hidden md:flex flex-row gap-x-5 text-2xl'
+          className='hidden md:flex flex-row gap-x-5 text-2xl items-center'
           socials={socials}
+          tooltipPosition='bottom'
         />
       </div>
       {favoriteState && (

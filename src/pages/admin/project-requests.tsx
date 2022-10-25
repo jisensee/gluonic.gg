@@ -10,6 +10,7 @@ import { db } from '@/server/db'
 import { GameLink } from '@/components/common/game-link'
 import { useProcessProjectRequestMutation } from '@/generated/graphql-hooks'
 import { useToast } from '@/context/toast-context'
+import { Link } from '@/components/link'
 
 type Props = {
   projectRequests: (ProjectRequest & { game: Game; user: User })[]
@@ -54,7 +55,15 @@ const ProjectCard: FC<ProjectCardProps> = ({
       <div className='flex flex-col gap-y-1'>
         <h2>{request.projectName}</h2>
         <GameLink gameKey={game.key} name={game.name} logoUrl={game.logoUrl} />
-        <span>From {user.name ?? user.address}</span>
+        <span>
+          From{' '}
+          <Link href={`/users/${user.id}`} highlight>
+            {user.name ?? user.address}
+          </Link>
+        </span>
+        <Link href={request.projectWebsite} external highlight>
+          {request.projectWebsite}
+        </Link>
       </div>
       <div className='hidden md:flex'>{request.projectAbstract}</div>
       <div className='grow' />
