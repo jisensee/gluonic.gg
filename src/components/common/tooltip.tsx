@@ -7,7 +7,7 @@ const positionClasses = (position: TooltipPosition) => {
   const leftRight =
     'top-1/2 -translate-y-1/2 after:top-1/2 after:-translate-y-1/2'
   const topBottom =
-    'left-1/2 -translate-x-1/2 after:left-1/2 after:-translate-x-1/2 w-full'
+    'left-1/2 -translate-x-1/2 after:left-1/2 after:-translate-x-1/2'
 
   switch (position) {
     case 'top':
@@ -48,9 +48,8 @@ export const Tooltip: FC<TooltipProps> = ({
   <div className='group relative'>
     <div
       className={classNames(
-        'opacity-0 group-hover:opacity-100',
-        'transition-opacity duration-300 ease-in-out',
-        'absolute z-50 ',
+        'hidden group-hover:flex',
+        'absolute w-fit z-50',
         'rounded-xl bg-base-300 p-3',
         'after:absolute after:border-[10px] after:border-transparent',
         positionClasses(position),

@@ -46,8 +46,8 @@ export const GameProjectCard: FC<GameProjectCardProps> = ({
       className
     )}
   >
-    <div className='flex flex-row gap-x-3 items-center'>
-      <Link className='w-14 md:w-14' href={detailLink}>
+    <div className='flex flex-row gap-x-3 items-start md:items-center'>
+      <Link className='hidden md:flex w-16' href={detailLink}>
         <img
           className='w-full min-w-full'
           src={logoUrl}
@@ -69,7 +69,11 @@ export const GameProjectCard: FC<GameProjectCardProps> = ({
         />
       </div>
       {favoriteState && (
-        <FavoriteButton state={favoriteState} onToggle={onFavoriteToggle} />
+        <FavoriteButton
+          className='mt-1 md:mt-0'
+          state={favoriteState}
+          onToggle={onFavoriteToggle}
+        />
       )}
     </div>
     <p>{abstract}</p>
