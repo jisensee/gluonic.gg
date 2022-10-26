@@ -17,6 +17,7 @@ import { LinkButton } from '@/components/common/link-button'
 import { FavoriteState, useFavoriteState } from '@/hooks/favorite-hooks'
 import { useToggleFavoriteProjectMutation } from '@/generated/graphql-hooks'
 import { FavoriteButton } from '@/components/favorite-button'
+import { Format } from '@/format'
 
 type Props = {
   project: Project & {
@@ -61,12 +62,12 @@ export const getServerSideProps: GetServerSideProps<Props> = async (context) =>
     const user = maybeUser.extract()
     const isFavorited = user
       ? await db.user
-        .findUnique({
-          where: { id: user.id },
-          include: { favoritedProjects: { where: { id: project.id } } },
-        })
-        .then((r) => r?.favoritedProjects ?? [])
-        .then((p) => p.length > 0)
+          .findUnique({
+            where: { id: user.id },
+            include: { favoritedProjects: { where: { id: project.id } } },
+          })
+          .then((r) => r?.favoritedProjects ?? [])
+          .then((p) => p.length > 0)
       : false
     const canManage = user ? await canUserManageProject(project, user) : false
     return {
@@ -99,9 +100,9 @@ const Favorites: FC<FavoritesProps> = ({
     },
     canFavorite
       ? () =>
-        mutateAsync({ projectId: projectId }).then((r) =>
-          setServerFavorited(r.toggleFavoriteProject)
-        )
+          mutateAsync({ projectId: projectId }).then((r) =>
+            setServerFavorited(r.toggleFavoriteProject)
+          )
       : undefined
   )
 
@@ -207,7 +208,7 @@ export default function ProjectPage({
             href={`/users/${author.id}`}
             highlight
           >
-            {author.name ?? author.address}
+            {Format.username(author.name)}
           </Link>
         ))}
       </div>

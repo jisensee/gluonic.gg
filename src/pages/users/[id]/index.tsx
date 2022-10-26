@@ -9,10 +9,10 @@ import { SocialLinks } from '@/components/social-links'
 import { Link } from '@/components/link'
 import { ProjectCard } from '@/components/game-project-card'
 import { PageTitle } from '@/components/common/page-title'
-import { shortenAddress } from '@/format'
 import { withOptionalUser } from '@/server/server-utils'
 import { UserService } from '@/server/user-service'
 import { useFavoriteProjectsList } from '@/hooks/favorite-hooks'
+import { Format } from '@/format'
 
 type Props = {
   user: User
@@ -80,7 +80,7 @@ export default function UserPage({
   return (
     <div className='flex flex-col gap-y-3'>
       <Head>
-        <title>{user.name}</title>
+        <title>{Format.username(user.name)}</title>
       </Head>
       <PageTitle
         rightElement={
@@ -96,12 +96,7 @@ export default function UserPage({
           )
         }
       >
-        {user.name ?? (
-          <>
-            <span className='hidden lg:flex'>{user.address}</span>
-            <span className='lg:hidden'>{shortenAddress(user.address)}</span>
-          </>
-        )}
+        {Format.username(user.name)}
       </PageTitle>
       <span className='italic'>
         Member since {user.joinedAt.toLocaleDateString()}

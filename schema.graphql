@@ -22,7 +22,7 @@ type Mutation {
 }
 
 input SocialsInput {
-  website: String @constraint(maxLength: 40, label: "Website")
+  website: String @constraint(maxLength: 80, label: "Website")
   twitter: String @constraint(maxLength: 40, label: "Twitter")
   github: String @constraint(maxLength: 80, label: "Github")
   discord: String @constraint(maxLength: 40, label: "Discord")
@@ -36,7 +36,7 @@ input ProjectSocialsInput {
 input ProjectBaseDataInput {
   abstract: String! @constraint(maxLength: 500, label: "Abstract")
   description: String @constraint(maxLength: 2000, label: "Project description")
-  website: String! @constraint(maxLength: 40, label: "Website")
+  website: String! @constraint(maxLength: 80, label: "Website")
   published: Boolean!
 }
 input ProjectDonationInput {
@@ -51,7 +51,7 @@ input ProjectUpdateInput {
 input ProjectRequestInput {
   name: String! @constraint(maxLength: 30, label: "Project name")
   abstract: String! @constraint(maxLength: 500, label: "Project abstract")
-  website: String! @constraint(maxLength: 40, label: "Project website")
+  website: String! @constraint(maxLength: 80, label: "Project website")
   gameId: String!
 }
 
@@ -70,9 +70,9 @@ type Socials {
 
 type User {
   id: ID!
-  name: String!
+  name: String
   bio: String
-  address: String
+  address: String!
   isAdmin: Boolean!
   hasDefaultName: Boolean!
   socials: Socials!

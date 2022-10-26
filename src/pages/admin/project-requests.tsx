@@ -11,6 +11,7 @@ import { GameLink } from '@/components/common/game-link'
 import { useProcessProjectRequestMutation } from '@/generated/graphql-hooks'
 import { useToast } from '@/context/toast-context'
 import { Link } from '@/components/link'
+import { Format } from '@/format'
 
 type Props = {
   projectRequests: (ProjectRequest & { game: Game; user: User })[]
@@ -58,7 +59,7 @@ const ProjectCard: FC<ProjectCardProps> = ({
         <span>
           From{' '}
           <Link href={`/users/${user.id}`} highlight>
-            {user.name ?? user.address}
+            {Format.username(user.name)}
           </Link>
         </span>
         <Link href={request.projectWebsite} external highlight>

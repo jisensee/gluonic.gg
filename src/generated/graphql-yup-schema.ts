@@ -14,7 +14,7 @@ export function ProjectBaseDataInputSchema(): yup.SchemaOf<ProjectBaseDataInput>
     abstract: yup.string().required().max(500).label("Abstract"),
     description: yup.string().max(2000).label("Project description"),
     published: yup.boolean().defined(),
-    website: yup.string().required().max(40).label("Website")
+    website: yup.string().required().max(80).label("Website")
   })
 }
 
@@ -29,7 +29,7 @@ export function ProjectRequestInputSchema(): yup.SchemaOf<ProjectRequestInput> {
     abstract: yup.string().required().max(500).label("Project abstract"),
     gameId: yup.string().required(),
     name: yup.string().required().max(30).label("Project name"),
-    website: yup.string().required().max(40).label("Project website")
+    website: yup.string().required().max(80).label("Project website")
   })
 }
 
@@ -54,6 +54,6 @@ export function SocialsInputSchema(): yup.SchemaOf<SocialsInput> {
     discord: yup.string().max(40).label("Discord"),
     github: yup.string().max(80).label("Github"),
     twitter: yup.string().max(40).label("Twitter"),
-    website: yup.string().max(40).label("Website")
+    website: yup.string().max(80).label("Website")
   })
 }

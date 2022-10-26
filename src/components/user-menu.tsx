@@ -9,19 +9,15 @@ import {
   IconDefinition,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { isAddress } from 'ethers/lib/utils'
 import { FC, PropsWithChildren } from 'react'
 import { Dropdown } from 'react-daisyui'
 import { Link } from './link'
 import { useAuthContext } from '@/context/auth-context'
 import { shortenAddress } from '@/format'
+import { OwnUserDataFragment } from '@/generated/graphql-hooks'
 
-const formatName = (name: string) => {
-  if (isAddress(name)) {
-    return shortenAddress(name)
-  }
-  return name
-}
+const formatName = (user: OwnUserDataFragment) =>
+  user.name && user.name.length > 0 ? user.name : shortenAddress(user.address)
 
 type ItemProps = {
   href: string
@@ -40,17 +36,16 @@ const Item: FC<ItemProps> = ({ href, icon, children }) => (
 
 type UserMenuProps = {
   signOut: () => void
-  name: string
 }
 
-export const UserMenu: FC<UserMenuProps> = ({ signOut, name }) => {
+export const UserMenu: FC<UserMenuProps> = ({ signOut }) => {
   const { user } = useAuthContext()
 
-  return (
+  return user ? (
     <Dropdown horizontal='center'>
       <Dropdown.Toggle color='ghost'>
         <div className='flex flex-row items-center gap-x-3 text-primary normal-case text-xl'>
-          {formatName(name)}
+          {formatName(user)}
           <FontAwesomeIcon icon={faAngleDown} />
         </div>
       </Dropdown.Toggle>
@@ -58,7 +53,7 @@ export const UserMenu: FC<UserMenuProps> = ({ signOut, name }) => {
         <Item href='/profile' icon={faUser}>
           My Profile
         </Item>
-        {user?.isAdmin && (
+        {user.isAdmin && (
           <Item href='/admin' icon={faCogs}>
             Administration
           </Item>
@@ -78,5 +73,5 @@ export const UserMenu: FC<UserMenuProps> = ({ signOut, name }) => {
         </Dropdown.Item>
       </Dropdown.Menu>
     </Dropdown>
-  )
+  ) : null
 }

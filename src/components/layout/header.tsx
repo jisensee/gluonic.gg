@@ -25,9 +25,7 @@ export const Header = () => {
           {!authLoading && (
             <>
               {status === 'unauthenticated' && <SignInButton />}
-              {status === 'authenticated' && user?.name && (
-                <UserMenu signOut={signOut} name={user.name} />
-              )}
+              {status === 'authenticated' && <UserMenu signOut={signOut} />}
             </>
           )}
         </div>

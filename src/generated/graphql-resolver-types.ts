@@ -111,13 +111,13 @@ export type SocialsInput = {
 
 export type User = {
   __typename?: 'User';
-  address: Maybe<Scalars['String']>;
+  address: Scalars['String'];
   bio: Maybe<Scalars['String']>;
   hasDefaultName: Scalars['Boolean'];
   id: Scalars['ID'];
   isAdmin: Scalars['Boolean'];
   isProjectAuthor: Scalars['Boolean'];
-  name: Scalars['String'];
+  name: Maybe<Scalars['String']>;
   socials: Socials;
 };
 
@@ -257,13 +257,13 @@ export type SocialsResolvers<ContextType = Context, ParentType extends Resolvers
 }>;
 
 export type UserResolvers<ContextType = Context, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = ResolversObject<{
-  address: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  address: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   bio: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   hasDefaultName: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   isAdmin: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   isProjectAuthor: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  name: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  name: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   socials: Resolver<ResolversTypes['Socials'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;

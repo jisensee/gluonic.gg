@@ -215,11 +215,13 @@ export const resolvers: Resolvers = {
     isAdmin: (user) => user.role === 'ADMIN',
     isProjectAuthor: async (user) =>
       (await db.projectAuthorships.count({ where: { user } })) > 0,
-    address: (user, _, { user: requestingUser }) =>
-      requestingUser
-        .filter((ru) => ru.id === user.id)
-        .map((u) => u.address)
-        .extractNullable(),
+    address: (user, _, { user: requestingUser }) => {
+      const isSame = requestingUser.map((ru) => ru.id === user.id)
+      if (!isSame) {
+        throw ForbiddenError
+      }
+      return user.address
+    },
     socials: (user) =>
       UserService.findSocials(user).orDefault({
         id: '',

@@ -128,29 +128,29 @@ export type SocialsInput = {
 
 export type User = {
   __typename?: 'User';
-  address?: Maybe<Scalars['String']>;
+  address: Scalars['String'];
   bio?: Maybe<Scalars['String']>;
   hasDefaultName: Scalars['Boolean'];
   id: Scalars['ID'];
   isAdmin: Scalars['Boolean'];
   isProjectAuthor: Scalars['Boolean'];
-  name: Scalars['String'];
+  name?: Maybe<Scalars['String']>;
   socials: Socials;
 };
 
-export type OwnUserDataFragment = { __typename?: 'User', id: string, name: string, bio?: string | null | undefined, address?: string | null | undefined, hasDefaultName: boolean, isProjectAuthor: boolean, isAdmin: boolean, socials: { __typename?: 'Socials', website?: string | null | undefined, twitter?: string | null | undefined, github?: string | null | undefined, discord?: string | null | undefined } };
+export type OwnUserDataFragment = { __typename?: 'User', id: string, name?: string | null | undefined, bio?: string | null | undefined, address: string, hasDefaultName: boolean, isProjectAuthor: boolean, isAdmin: boolean, socials: { __typename?: 'Socials', website?: string | null | undefined, twitter?: string | null | undefined, github?: string | null | undefined, discord?: string | null | undefined } };
 
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CurrentUserQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, name: string, bio?: string | null | undefined, address?: string | null | undefined, hasDefaultName: boolean, isProjectAuthor: boolean, isAdmin: boolean, socials: { __typename?: 'Socials', website?: string | null | undefined, twitter?: string | null | undefined, github?: string | null | undefined, discord?: string | null | undefined } } | null | undefined };
+export type CurrentUserQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, name?: string | null | undefined, bio?: string | null | undefined, address: string, hasDefaultName: boolean, isProjectAuthor: boolean, isAdmin: boolean, socials: { __typename?: 'Socials', website?: string | null | undefined, twitter?: string | null | undefined, github?: string | null | undefined, discord?: string | null | undefined } } | null | undefined };
 
 export type UpdateOwnUserMutationVariables = Exact<{
   data: OwnUserUpdateInput;
 }>;
 
 
-export type UpdateOwnUserMutation = { __typename?: 'Mutation', updateOwnUser: { __typename?: 'User', id: string, name: string, bio?: string | null | undefined, address?: string | null | undefined, hasDefaultName: boolean, isProjectAuthor: boolean, isAdmin: boolean, socials: { __typename?: 'Socials', website?: string | null | undefined, twitter?: string | null | undefined, github?: string | null | undefined, discord?: string | null | undefined } } };
+export type UpdateOwnUserMutation = { __typename?: 'Mutation', updateOwnUser: { __typename?: 'User', id: string, name?: string | null | undefined, bio?: string | null | undefined, address: string, hasDefaultName: boolean, isProjectAuthor: boolean, isAdmin: boolean, socials: { __typename?: 'Socials', website?: string | null | undefined, twitter?: string | null | undefined, github?: string | null | undefined, discord?: string | null | undefined } } };
 
 export type UpdateProjectMutationVariables = Exact<{
   projectId: Scalars['ID'];
