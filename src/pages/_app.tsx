@@ -1,4 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { Analytics } from '@vercel/analytics/react'
 import { getDefaultProvider } from 'ethers'
 import { NextPage } from 'next'
 import { SessionProvider } from 'next-auth/react'
@@ -40,7 +41,7 @@ const Providers = ({
   pageProps,
   children,
 }: // eslint-disable-next-line @typescript-eslint/no-explicit-any
-{ pageProps: any } & PropsWithChildren) => (
+  { pageProps: any } & PropsWithChildren) => (
   <QueryClientProvider client={queryClient}>
     <WagmiConfig client={wagmiClient}>
       <SessionProvider session={pageProps.session} refetchInterval={0}>
@@ -66,6 +67,7 @@ export default function App({ Component, pageProps }: CustomAppProps) {
         {getLayout(<Component {...pageProps} />)}
         <CookieBanner />
       </Providers>
+      <Analytics />
     </>
   )
 }
