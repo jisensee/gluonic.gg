@@ -32,7 +32,14 @@ const MarkdownDisplay: FC<MarkdownDisplayProps> = ({
         {info.text}
       </Button>
     )}
-    <ReactMarkdown className='prose prose-headings:text-primary'>
+    <ReactMarkdown
+      className={classNames(
+        'prose prose-headings:text-primary prose-headings:mt-0',
+        'prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-h4:text-lg',
+        'prose-a:text-secondary prose-a:font-bold prose-a:hover:text-primary prose-a:no-underline'
+      )}
+      linkTarget='_blank'
+    >
       {children}
     </ReactMarkdown>
   </div>
