@@ -36,7 +36,7 @@ export const WalletConnectModal: FC<WalletConnectModalProps> = ({
         <FontAwesomeIcon
           icon={faClose}
           onClick={onClose}
-          className='hover:text-primary cursor-pointer'
+          className='cursor-pointer hover:text-primary'
         />
       </Modal.Header>
       <Modal.Body className='flex flex-col gap-y-3'>

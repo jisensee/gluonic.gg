@@ -18,7 +18,7 @@ export const Link: FC<PropsWithChildren<LinkProps>> = ({
   highlight,
   className,
 }) => (
-  <NextLink href={href} passHref>
+  <NextLink href={href} passHref legacyBehavior>
     <a
       className={classNames(
         { 'font-bold text-secondary hover:text-primary ': highlight },

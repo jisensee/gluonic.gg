@@ -3,22 +3,20 @@ import { FC } from 'react'
 import { Input } from 'react-daisyui'
 import { useForm } from 'react-hook-form'
 import classNames from 'classnames'
+import { z } from 'zod'
 import { FormField, errorColor, SaveButton } from '../common/form'
-import {
-  InputMaybe,
-  ProjectDonationInput,
-  useUpdateProjectMutation,
-} from '@/generated/graphql-hooks'
 import { useStatusToast, mutationToToastStatus } from '@/context/toast-context'
+import { trpc } from '@/utils/trpc'
+import { ProjectRouterInputs } from '@/utils/trpc-inputs'
+
+type UpdateData = z.infer<typeof ProjectRouterInputs.update>
 
 export type ProjectDonationsFormProps = {
   className?: string
-  projectId: string
-  initialData: ProjectDonationInput
+  initialData: UpdateData
 }
 export const ProjectDonationsForm: FC<ProjectDonationsFormProps> = ({
   className,
-  projectId,
   initialData,
 }) => {
   const {
@@ -30,7 +28,7 @@ export const ProjectDonationsForm: FC<ProjectDonationsFormProps> = ({
     mode: 'onChange',
   })
 
-  const { mutate, status } = useUpdateProjectMutation()
+  const { mutate, status } = trpc.project.update.useMutation()
   useStatusToast(mutationToToastStatus(status), {
     success: {
       title: 'Donation data successfully saved!',
@@ -38,10 +36,7 @@ export const ProjectDonationsForm: FC<ProjectDonationsFormProps> = ({
     error: { title: 'Could not save donation data!' },
   })
 
-  const onSubmit = (data: ProjectDonationInput) =>
-    mutate({ data: { donationData: data }, projectId })
-
-  const validateAddress = (address: InputMaybe<string>) => {
+  const validateAddress = (address: string | null | undefined) => {
     if (address && !isAddress(address)) {
       return 'Please enter a valid Ethereum address'
     }
@@ -51,8 +46,8 @@ export const ProjectDonationsForm: FC<ProjectDonationsFormProps> = ({
     <div className={classNames('flex flex-col gap-y-3', className)}>
       <h2>Donations</h2>
       <form
-        className='flex flex-col gap-y-3 responsive-form'
-        onSubmit={handleSubmit(onSubmit)}
+        className='responsive-form flex flex-col gap-y-3'
+        onSubmit={handleSubmit((d) => mutate(d))}
       >
         <FormField
           label='Donation address'

@@ -1,15 +1,25 @@
 import { faClose } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { FC, PropsWithChildren, ReactNode } from 'react'
-import { Modal as DaisyModal } from 'react-daisyui'
+import { Button, Modal as DaisyModal } from 'react-daisyui'
+import { useEscapeKeyHandler } from '@/hooks/misc-hooks'
 
 export type ModalProps = {
   title: ReactNode
   open: boolean
   onClose: () => void
+  actions?: ReactNode
 } & PropsWithChildren
 
-export const Modal: FC<ModalProps> = ({ title, open, onClose, children }) => {
+export const Modal: FC<ModalProps> = ({
+  title,
+  open,
+  onClose,
+  actions,
+  children,
+}) => {
+  useEscapeKeyHandler(onClose)
+
   return (
     <DaisyModal
       className='border border-primary'
@@ -21,10 +31,42 @@ export const Modal: FC<ModalProps> = ({ title, open, onClose, children }) => {
         <FontAwesomeIcon
           icon={faClose}
           onClick={onClose}
-          className='hover:text-primary cursor-pointer'
+          className='cursor-pointer hover:text-primary'
         />
       </DaisyModal.Header>
       <DaisyModal.Body>{children}</DaisyModal.Body>
+      {actions && <DaisyModal.Actions>{actions}</DaisyModal.Actions>}
     </DaisyModal>
   )
 }
+
+type ConfirmModalProps = {
+  onConfirm: () => void
+  confirmLabel: ReactNode
+  cancelLabel?: ReactNode
+} & Omit<ModalProps, 'actions'>
+
+export const ConfirmModal: FC<ConfirmModalProps> = ({
+  onConfirm,
+  confirmLabel,
+  cancelLabel = 'Cancel',
+  ...props
+}) => (
+  <Modal
+    {...props}
+    actions={
+      <>
+        <Button onClick={props.onClose}>{cancelLabel}</Button>
+        <Button
+          color='error'
+          onClick={() => {
+            props.onClose()
+            onConfirm()
+          }}
+        >
+          {confirmLabel}
+        </Button>
+      </>
+    }
+  />
+)

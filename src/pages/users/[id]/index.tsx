@@ -1,10 +1,10 @@
-import { Game, Project, Socials, User } from '@prisma/client'
-import { GetServerSideProps } from 'next'
+import type { Game, Project, Socials, User } from '@prisma/client'
+import type { GetServerSideProps } from 'next'
 import { Button } from 'react-daisyui'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEdit } from '@fortawesome/free-solid-svg-icons'
 import Head from 'next/head'
-import { db } from '@/server/db'
+import { prisma } from '@/server/db/client'
 import { SocialLinks } from '@/components/social-links'
 import { Link } from '@/components/link'
 import { ProjectCard } from '@/components/game-project-card'
@@ -33,7 +33,7 @@ export const getServerSideProps: GetServerSideProps<Props> = (context) =>
     const favoritedProjectIds = requestingUser
       ? await UserService.findFavoritedProjectIds(requestingUser)
       : undefined
-    const user = await db.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { id },
       include: {
         socials: true,
@@ -103,7 +103,7 @@ export default function UserPage({
       </span>
       {user.bio && <p>{user.bio}</p>}
       <SocialLinks
-        className='flex flex-row flex-wrap gap-5 justify-center sm:justify-start'
+        className='flex flex-row flex-wrap justify-center gap-5 sm:justify-start'
         socials={socials}
       />
       {projects.length > 0 ? (

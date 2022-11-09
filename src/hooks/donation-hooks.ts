@@ -1,3 +1,4 @@
+import { BigNumber } from 'ethers'
 import {
   erc20ABI,
   useContractWrite,
@@ -14,12 +15,14 @@ const addresses: Record<Token, string> = {
   usdc: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
 }
 
+type Address = `0x{string}`
+
 export const useErc20Donation = (token: Token, targetAddress: string) => {
   const { config } = usePrepareContractWrite({
-    addressOrName: addresses[token],
-    contractInterface: erc20ABI,
+    address: addresses[token],
+    abi: erc20ABI,
     functionName: 'transfer',
-    args: [targetAddress, 0],
+    args: [targetAddress as Address, BigNumber.from(0)],
   })
   return useContractWrite(config)
 }

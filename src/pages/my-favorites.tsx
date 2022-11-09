@@ -1,7 +1,7 @@
 import { Game, Project, Socials } from '@prisma/client'
 import { GetServerSideProps } from 'next'
 import { withUser } from '@/server/server-utils'
-import { db } from '@/server/db'
+import { prisma } from '@/server/db/client'
 import { PageTitle } from '@/components/common/page-title'
 import { ProjectCard } from '@/components/game-project-card'
 import { useFavoriteProjectsList } from '@/hooks/favorite-hooks'
@@ -16,7 +16,7 @@ type Props = {
 
 export const getServerSideProps: GetServerSideProps<Props> = (context) =>
   withUser(context, async (user) => {
-    const projects = await db.user
+    const projects = await prisma.user
       .findUnique({
         where: { id: user.id },
         include: {

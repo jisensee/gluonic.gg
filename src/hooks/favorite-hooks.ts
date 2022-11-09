@@ -1,5 +1,5 @@
 import { Reducer, useReducer, useEffect, useState } from 'react'
-import { useToggleFavoriteProjectMutation } from '@/generated/graphql-hooks'
+import { trpc } from '@/utils/trpc'
 
 export type FavoriteState = {
   favorited: boolean
@@ -56,27 +56,27 @@ export const useFavoriteState = (
     localFavoriteState: localState,
     toggleFavorite: serverToggle
       ? () => {
-        dispatchFavAction({ type: 'toggle' })
-        serverToggle()
-      }
+          dispatchFavAction({ type: 'toggle' })
+          serverToggle()
+        }
       : undefined,
   }
 }
 
 export const useFavoriteProjectsList = (favoritedProjectIds?: string[]) => {
-  const { mutateAsync } = useToggleFavoriteProjectMutation()
+  const { mutateAsync } = trpc.project.toggleFavorite.useMutation()
   const [favoritedProjects, setFavoritedProjects] =
     useState(favoritedProjectIds)
   const updateFavorite = favoritedProjects
     ? (projectId: string, favorited: boolean) =>
-      setFavoritedProjects((prev) => {
-        const old = prev ?? []
-        if (favorited) {
-          return [...old, projectId]
-        } else {
-          return old.filter((id) => id !== projectId)
-        }
-      })
+        setFavoritedProjects((prev) => {
+          const old = prev ?? []
+          if (favorited) {
+            return [...old, projectId]
+          } else {
+            return old.filter((id) => id !== projectId)
+          }
+        })
     : undefined
 
   return {
@@ -84,10 +84,10 @@ export const useFavoriteProjectsList = (favoritedProjectIds?: string[]) => {
       favoritedProjects?.includes(projectId) ?? false,
     toggleFavorite: favoritedProjectIds
       ? (projectId: string) => {
-        mutateAsync({ projectId }).then((v) =>
-          updateFavorite?.(projectId, v.toggleFavoriteProject)
-        )
-      }
+          mutateAsync({ projectId }).then((newState) =>
+            updateFavorite?.(projectId, newState)
+          )
+        }
       : undefined,
   }
 }

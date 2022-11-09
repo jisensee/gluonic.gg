@@ -44,11 +44,16 @@ model Project {
 }
 
 model ProjectPost {
-  id        String  @id @default(uuid())
-  project   Project @relation(fields: [projectId], references: [id])
-  author    User    @relation(fields: [authorId], references: [id])
-  authorId  String
-  projectId String
+  id          String   @id @default(uuid())
+  project     Project  @relation(fields: [projectId], references: [id])
+  author      User     @relation(fields: [authorId], references: [id])
+  authorId    String
+  projectId   String
+  title       String
+  abstract    String
+  body        String
+  publishedAt DateTime @default(now())
+  editedAt    DateTime @default(now())
 }
 
 enum UserRole {

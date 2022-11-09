@@ -3,7 +3,7 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import nextConnect from 'next-connect'
 import aws from 'aws-sdk'
 import multer from 'multer'
-import { db } from '@/server/db'
+import { prisma } from '@/server/db/client'
 import { AuthService } from '@/server/auth-service'
 import { canUserManageProject } from '@/server/server-utils'
 
@@ -59,7 +59,7 @@ apiRoute.post(async (req: MulterRequest, res: NextApiResponse) => {
     return res.status(401)
   }
   const projectId = req.body['projectId']
-  const project = await db.project.findUnique({ where: { id: projectId } })
+  const project = await prisma.project.findUnique({ where: { id: projectId } })
   if (!project) {
     return res.status(404)
   }
@@ -79,7 +79,7 @@ apiRoute.post(async (req: MulterRequest, res: NextApiResponse) => {
         ContentType: req.file.mimetype,
       })
       .promise()
-    await db.project.update({
+    await prisma.project.update({
       data: { logoUrl: result.Location },
       where: { id: projectId },
     })

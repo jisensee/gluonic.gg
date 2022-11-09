@@ -42,28 +42,28 @@ export const GameProjectCard: FC<GameProjectCardProps> = ({
   <Card
     side
     className={classNames(
-      'flex flex-col gap-y-3 border-primary py-3 px-5 bg-base-200',
+      'flex flex-col gap-y-3 border-primary bg-base-200 py-3 px-5',
       className
     )}
   >
-    <div className='flex flex-row gap-x-3 items-start md:items-center'>
-      <Link className='hidden md:flex w-16' href={detailLink}>
+    <div className='flex flex-row items-start gap-x-3 md:items-center'>
+      <Link className='hidden w-16 md:flex' href={detailLink}>
         <img
           className='w-full min-w-full'
           src={logoUrl}
           alt={`${title} logo`}
         />
       </Link>
-      <div className='flex flex-row gap-x-5 flex-wrap items-center grow'>
+      <div className='flex grow flex-row flex-wrap items-center gap-x-5'>
         <h2 className='text-primary'>{title}</h2>
         <SocialLinks
-          className='flex md:hidden flex-row gap-x-5 text-2xl items-center'
+          className='flex flex-row items-center gap-x-5 text-2xl md:hidden'
           socials={socials}
           compact
           tooltipPosition='bottom'
         />
         <SocialLinks
-          className='hidden md:flex flex-row gap-x-5 text-2xl items-center'
+          className='hidden flex-row items-center gap-x-5 text-2xl md:flex'
           socials={socials}
           tooltipPosition='bottom'
         />
@@ -77,7 +77,7 @@ export const GameProjectCard: FC<GameProjectCardProps> = ({
       )}
     </div>
     <p>{abstract}</p>
-    <div className='flex flex-col sm:flex-row items-center justify-center gap-x-5 gap-y-3'>
+    <div className='flex flex-col items-center justify-center gap-x-5 gap-y-3 sm:flex-row'>
       <Link href={detailLink}>
         <Button
           color='primary'

@@ -2,7 +2,7 @@ import { Game, Socials } from '@prisma/client'
 import { GetStaticProps } from 'next'
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 import Head from 'next/head'
-import { db } from '@/server/db'
+import { prisma } from '@/server/db/client'
 import { GameProjectCard } from '@/components/game-project-card'
 import { Link } from '@/components/link'
 
@@ -10,15 +10,16 @@ type Props = {
   games: (Game & { socials: Socials; _count: { projects: number } })[]
 }
 export const getStaticProps: GetStaticProps<Props> = async () => {
-  const games = await db.game.findMany({
+  const games = await prisma.game.findMany({
     include: {
-      socials: true, _count: {
+      socials: true,
+      _count: {
         select: {
           projects: {
-            where: { published: true }
-          }
-        }
-      }
+            where: { published: true },
+          },
+        },
+      },
     },
   })
   return {

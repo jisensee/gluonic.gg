@@ -1,4 +1,5 @@
-import { FC, useEffect, useState } from 'react'
+import type { FC } from 'react'
+import { useEffect, useState } from 'react'
 import { Button } from 'react-daisyui'
 import { useForm } from 'react-hook-form'
 import classNames from 'classnames'
@@ -48,8 +49,9 @@ export const ProjectImagesForm: FC<ProjectImagesFormProps> = ({
   }, [data, error])
 
   const onSubmit = (data: FormState) => {
-    if (data.logo?.length === 1) {
-      mutate({ image: data.logo[0], projectId })
+    const image = data.logo?.[0]
+    if (image) {
+      mutate({ image, projectId })
     }
   }
 
@@ -61,11 +63,11 @@ export const ProjectImagesForm: FC<ProjectImagesFormProps> = ({
       <h2>Upload logo</h2>
 
       <p>Set a new logo for your project.</p>
-      <div className='flex flex-row gap-x-3 items-center'>
+      <div className='flex flex-row items-center gap-x-3'>
         {logoUrl && <img className='h-20' src={logoUrl} alt='logo' />}
         <div className='flex flex-col gap-y-2'>
           <input
-            className='file:mr-5 file:rounded-xl file:bg-primary file:border-0 file:px-5 file:py-3 file:cursor-pointer file:hover:bg-primary-focus pl-0 py-0 rounded-xl bg-neutral pr-5'
+            className='rounded-xl bg-neutral py-0 pl-0 pr-5 file:mr-5 file:cursor-pointer file:rounded-xl file:border-0 file:bg-primary file:px-5 file:py-3 file:hover:bg-primary-focus'
             type='file'
             {...register('logo', {
               validate: {
@@ -95,7 +97,7 @@ export const ProjectImagesForm: FC<ProjectImagesFormProps> = ({
         </div>
       </div>
       <Button
-        className='w-full md:w-52 mt-2'
+        className='mt-2 w-full md:w-52'
         color='primary'
         type='submit'
         disabled={!isDirty || !isValid}

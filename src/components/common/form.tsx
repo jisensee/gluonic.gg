@@ -22,14 +22,14 @@ export const FormField: FC<FormFieldProps> = ({
   children,
 }) => (
   <div className={classNames('form-control', className)}>
-    <label className='label font-bold text-lg'>{label}</label>
+    <label className='label text-lg font-bold'>{label}</label>
     {children}
     {error?.message && (
-      <span className='text-error mt-1 first-letter:capitalize'>
+      <span className='mt-1 text-error first-letter:capitalize'>
         {error.message}
       </span>
     )}
-    {infoMessage && <span className='italic mt-1'>{infoMessage}</span>}
+    {infoMessage && <span className='mt-1 italic'>{infoMessage}</span>}
   </div>
 )
 
@@ -57,7 +57,7 @@ export const SaveButton = (props: ButtonProps) => (
     color='primary'
     {...props}
   >
-    Save
+    {props.children ?? 'Save'}
   </Button>
 )
 

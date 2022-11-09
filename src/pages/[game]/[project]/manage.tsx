@@ -4,8 +4,8 @@ import { Tabs } from 'react-daisyui'
 import { useState } from 'react'
 
 import Head from 'next/head'
+import { z } from 'zod'
 import { canUserManageProject, withUser } from '@/server/server-utils'
-import { db } from '@/server/db'
 
 import { ProjectBaseDataForm } from '@/components/manage-project-page/project-base-data-form'
 import { ProjectSocialsForm } from '@/components/manage-project-page/project-socials-form'
@@ -13,6 +13,8 @@ import { ProjectDonationsForm } from '@/components/manage-project-page/project-d
 import { PageTitle } from '@/components/common/page-title'
 import { LinkButton } from '@/components/common/link-button'
 import { ProjectImagesForm } from '@/components/manage-project-page/project-images-form'
+import { prisma } from '@/server/db/client'
+import { ProjectRouterInputs } from '@/utils/trpc-inputs'
 
 type Props = {
   project: Project & {
@@ -20,12 +22,13 @@ type Props = {
     game: Game
   }
 }
+type UpdateData = z.infer<typeof ProjectRouterInputs.update>
 
-export const getServerSideProps: GetServerSideProps<Props> = async (context) =>
+export const getServerSideProps: GetServerSideProps<Props> = (context) =>
   withUser(context, async (user) => {
     const key = context.query['project'] as string
 
-    const project = await db.project.findUnique({
+    const project = await prisma.project.findUnique({
       where: { key },
       include: { game: true, socials: true },
     })
@@ -42,6 +45,19 @@ type ActiveTab = 'data' | 'socials' | 'donations' | 'images'
 
 export default function ManageProjectPage({ project }: Props) {
   const [tab, setTab] = useState<ActiveTab>('data')
+  const data: UpdateData = {
+    projectId: project.id,
+    abstract: project.abstract,
+    website: project.website,
+    description: project.description ?? '',
+    published: project.published,
+    donationAddress: project.donationAddress ?? '',
+    socials: {
+      discord: project.socials.discord ?? '',
+      github: project.socials.github ?? '',
+      twitter: project.socials.twitter ?? '',
+    },
+  }
 
   return (
     <div className='flex flex-col gap-y-3'>
@@ -68,22 +84,11 @@ export default function ManageProjectPage({ project }: Props) {
       </Tabs>
       <ProjectBaseDataForm
         className={tab === 'data' ? 'flex' : 'hidden'}
-        projectId={project.id}
-        initialData={{
-          abstract: project.abstract,
-          website: project.website,
-          description: project.description ?? '',
-          published: project.published,
-        }}
+        initialData={data}
       />
       <ProjectSocialsForm
         className={tab === 'socials' ? 'flex' : 'hidden'}
-        projectId={project.id}
-        initialData={{
-          discord: project.socials.discord ?? '',
-          github: project.socials.github ?? '',
-          twitter: project.socials.twitter ?? '',
-        }}
+        initialData={data}
       />
       <ProjectImagesForm
         className={tab === 'images' ? 'flex' : 'hidden'}
@@ -92,8 +97,7 @@ export default function ManageProjectPage({ project }: Props) {
       />
       <ProjectDonationsForm
         className={tab === 'donations' ? 'flex' : 'hidden'}
-        projectId={project.id}
-        initialData={{ donationAddress: project.donationAddress }}
+        initialData={data}
       />
     </div>
   )

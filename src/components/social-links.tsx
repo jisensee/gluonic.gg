@@ -64,7 +64,7 @@ const SocialLink: FC<SocialLinkProps> = ({
   ) : (
     <Tooltip
       content='Click to copy'
-      className={'text-sm whitespace-nowrap'}
+      className={'whitespace-nowrap text-sm'}
       position={tooltipPosition}
     >
       <Button

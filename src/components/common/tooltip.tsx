@@ -49,7 +49,7 @@ export const Tooltip: FC<TooltipProps> = ({
     <div
       className={classNames(
         'hidden group-hover:flex',
-        'absolute w-fit z-50',
+        'absolute z-50 w-fit',
         'rounded-xl bg-base-300 p-3',
         'after:absolute after:border-[10px] after:border-transparent',
         positionClasses(position),

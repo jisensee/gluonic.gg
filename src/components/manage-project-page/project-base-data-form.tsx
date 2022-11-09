@@ -1,26 +1,24 @@
-import { yupResolver } from '@hookform/resolvers/yup'
 import classNames from 'classnames'
 import { FC } from 'react'
 import { Toggle, Input, Textarea } from 'react-daisyui'
 import { useForm, Controller } from 'react-hook-form'
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { FormField, errorColor, SaveButton } from '../common/form'
 import { Markdown } from '../markdown'
-import { ProjectBaseDataInputSchema } from '@/generated/graphql-yup-schema'
-import {
-  ProjectBaseDataInput,
-  useUpdateProjectMutation,
-} from '@/generated/graphql-hooks'
 import { mutationToToastStatus, useStatusToast } from '@/context/toast-context'
+import { ProjectRouterInputs } from '@/utils/trpc-inputs'
+import { trpc } from '@/utils/trpc'
+
+type UpdateData = z.infer<typeof ProjectRouterInputs.update>
 
 export type ProjectBaseDataFormProps = {
   className?: string
-  initialData: ProjectBaseDataInput
-  projectId: string
+  initialData: UpdateData
 }
 export const ProjectBaseDataForm: FC<ProjectBaseDataFormProps> = ({
   className,
   initialData,
-  projectId,
 }) => {
   const {
     register,
@@ -29,15 +27,12 @@ export const ProjectBaseDataForm: FC<ProjectBaseDataFormProps> = ({
     formState: { errors, isValid },
   } = useForm({
     defaultValues: initialData,
-    resolver: yupResolver(ProjectBaseDataInputSchema()),
+    resolver: zodResolver(ProjectRouterInputs.update),
     mode: 'onChange',
+    reValidateMode: 'onChange',
   })
-  const { mutate, status } = useUpdateProjectMutation()
-  const onSubmit = (data: ProjectBaseDataInput) =>
-    mutate({
-      projectId,
-      data: { baseData: data },
-    })
+  const { mutate, status } = trpc.project.update.useMutation()
+  console.log({ errors, isValid })
 
   useStatusToast(mutationToToastStatus(status), {
     success: {
@@ -50,7 +45,10 @@ export const ProjectBaseDataForm: FC<ProjectBaseDataFormProps> = ({
     <div className={classNames('flex flex-col gap-y-3', className)}>
       <h2>Project data</h2>
 
-      <form className='flex flex-col gap-y-3' onSubmit={handleSubmit(onSubmit)}>
+      <form
+        className='flex flex-col gap-y-3'
+        onSubmit={handleSubmit((d) => mutate(d))}
+      >
         <FormField
           label='Published'
           infoMessage='Published projects will be viewable to all users. Disabled this if you want to hide your project for a bit.'

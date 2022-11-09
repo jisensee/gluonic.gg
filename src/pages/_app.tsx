@@ -4,10 +4,11 @@ import { getDefaultProvider } from 'ethers'
 import { NextPage } from 'next'
 import { SessionProvider } from 'next-auth/react'
 import type { AppProps } from 'next/app'
-import { PropsWithChildren, ReactElement, ReactNode } from 'react'
+import { FC, PropsWithChildren, ReactElement, ReactNode } from 'react'
 import { createClient, WagmiConfig } from 'wagmi'
 import { config } from '@fortawesome/fontawesome-svg-core'
 import Head from 'next/head'
+import { trpc } from '../utils/trpc'
 import { Layout } from '../components/layout/layout'
 import { AuthContextProvider } from '@/context/auth-context'
 import '../styles/global.css'
@@ -41,7 +42,7 @@ const Providers = ({
   pageProps,
   children,
 }: // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  { pageProps: any } & PropsWithChildren) => (
+{ pageProps: any } & PropsWithChildren) => (
   <QueryClientProvider client={queryClient}>
     <WagmiConfig client={wagmiClient}>
       <SessionProvider session={pageProps.session} refetchInterval={0}>
@@ -58,7 +59,7 @@ const Providers = ({
 const defaultLayout: LayoutComponent = (page) => <Layout>{page}</Layout>
 const customLayout: LayoutComponent = (page) => page
 
-export default function App({ Component, pageProps }: CustomAppProps) {
+const App: FC<CustomAppProps> = ({ Component, pageProps }) => {
   const getLayout = Component.customLayout ? customLayout : defaultLayout
   return (
     <>
@@ -104,3 +105,4 @@ function AppHead() {
     </Head>
   )
 }
+export default trpc.withTRPC(App)
