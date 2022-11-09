@@ -2,20 +2,18 @@ import { Game } from '@prisma/client'
 import { GetServerSideProps } from 'next'
 import { FC } from 'react'
 import { useForm } from 'react-hook-form'
-import { yupResolver } from '@hookform/resolvers/yup'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { Button, Input, Select, Textarea } from 'react-daisyui'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons'
 import { useRouter } from 'next/router'
 import Head from 'next/head'
+import { z } from 'zod'
 import { FormField } from '@/components/common/form'
-import { ProjectRequestInputSchema } from '@/generated/graphql-yup-schema'
-import {
-  ProjectRequestInput,
-  useRequestProjectMutation,
-} from '@/generated/graphql-hooks'
-import { db } from '@/server/db'
+import { prisma } from '@/server/db/client'
 import { withOptionalUser } from '@/server/server-utils'
+import { ProjectRouterInputs } from '@/utils/trpc-inputs'
+import { trpc } from '@/utils/trpc'
 
 type Props = {
   games?: Game[]
@@ -27,15 +25,18 @@ export const getServerSideProps: GetServerSideProps<Props> = (context) =>
       return Promise.resolve({ props: {} })
     }
 
-    const games = await db.game.findMany()
+    const games = await prisma.game.findMany()
     return { props: { games } }
   })
 
+type FormState = z.infer<typeof ProjectRouterInputs.request>
+
 type ProjectRequestFormProps = {
-  onSubmit: (data: ProjectRequestInput) => void
+  onSubmit: (data: FormState) => void
   games: Game[]
   loading: boolean
 }
+
 const ProjectRequestForm: FC<ProjectRequestFormProps> = ({
   onSubmit,
   games,
@@ -45,15 +46,15 @@ const ProjectRequestForm: FC<ProjectRequestFormProps> = ({
     register,
     handleSubmit,
     formState: { errors, isValid },
-  } = useForm<ProjectRequestInput>({
-    resolver: yupResolver(ProjectRequestInputSchema()),
+  } = useForm<FormState>({
+    resolver: zodResolver(ProjectRouterInputs.request),
     mode: 'onChange',
     reValidateMode: 'onChange',
   })
 
   return (
     <form
-      className='flex flex-col gap-y-3 responsive-form'
+      className='responsive-form flex flex-col gap-y-3'
       onSubmit={handleSubmit(onSubmit)}
     >
       <FormField
@@ -102,7 +103,8 @@ const ProjectRequestForm: FC<ProjectRequestFormProps> = ({
 }
 
 export default function RequestProjectPage({ games }: Props) {
-  const { mutateAsync: submitRequest, status } = useRequestProjectMutation()
+  const { mutateAsync: submitRequest, status } =
+    trpc.project.request.useMutation()
   const { push } = useRouter()
 
   return (
@@ -123,12 +125,8 @@ export default function RequestProjectPage({ games }: Props) {
             games={games}
             loading={status === 'loading'}
             onSubmit={(data) =>
-              submitRequest({ projectRequestData: data }).then((r) => {
-                const success = r.requestProject
-                if (success) {
-                  push('/request-project/success')
-                }
-                return success
+              submitRequest(data).then(() => {
+                push('/request-project/success')
               })
             }
           />

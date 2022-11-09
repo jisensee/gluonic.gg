@@ -17,12 +17,12 @@ export const FavoriteButton: FC<FavoriteButtonProps> = ({
 }) => {
   const content = (
     <div
-      className={classNames('flex flex-row gap-x-2 items-center', className)}
+      className={classNames('flex flex-row items-center gap-x-2', className)}
     >
       <span className='font-bold'>{state.count}</span>
       <FontAwesomeIcon
         onClick={onToggle}
-        className={classNames('text-2xl cursor-pointer', {
+        className={classNames('cursor-pointer text-2xl', {
           'text-primary': state.favorited,
           'hover:text-current': onToggle && state.favorited,
           'hover:text-primary': onToggle && !state.favorited,
@@ -35,7 +35,7 @@ export const FavoriteButton: FC<FavoriteButtonProps> = ({
     content
   ) : (
     <Tooltip
-      className='text-md whitespace-nowrap mr-4'
+      className='text-md mr-4 whitespace-nowrap'
       position='left'
       content='Sign in to favorite projects'
     >

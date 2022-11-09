@@ -1,8 +1,8 @@
-import { Game, Project, Socials } from '@prisma/client'
-import { GetServerSideProps } from 'next'
+import type { Game, Project, Socials } from '@prisma/client'
+import type { GetServerSideProps } from 'next'
 import Head from 'next/head'
 import { faGlobe } from '@fortawesome/free-solid-svg-icons'
-import { db } from '@/server/db'
+import { prisma } from '@/server/db/client'
 import { ProjectCard } from '@/components/game-project-card'
 import { LinkButton } from '@/components/common/link-button'
 import { SocialLinks } from '@/components/social-links'
@@ -30,7 +30,7 @@ export const getServerSideProps: GetServerSideProps<Props> = (context) =>
       ? await UserService.findFavoritedProjectIds(user)
       : undefined
 
-    const game = await db.game.findUnique({
+    const game = await prisma.game.findUnique({
       where: { key },
       include: {
         socials: true,
@@ -62,8 +62,8 @@ export default function GamePage({ game, favoritedProjectIds }: Props) {
         <title>{game.name}</title>
       </Head>
       <div className='flex flex-col gap-y-3'>
-        <div className='flex flex-row items-center gap-x-8 gap-y-2 flex-wrap justify-center sm:justify-start bg-base-200 p-3 rounded-2xl'>
-          <div className='flex flex-row items-center gap-x-3 mr-auto'>
+        <div className='flex flex-row flex-wrap items-center justify-center gap-x-8 gap-y-2 rounded-2xl bg-base-200 p-3 sm:justify-start'>
+          <div className='mr-auto flex flex-row items-center gap-x-3'>
             <img
               className='h-10'
               src={game.logoUrl}
@@ -80,12 +80,12 @@ export default function GamePage({ game, favoritedProjectIds }: Props) {
             Website
           </LinkButton>
           <SocialLinks
-            className='flex md:hidden flex-row items-center gap-x-3 text-4xl'
+            className='flex flex-row items-center gap-x-3 text-4xl md:hidden'
             socials={game.socials}
             compact
           />
           <SocialLinks
-            className='hidden md:flex flex-row items-center gap-x-3 text-4xl'
+            className='hidden flex-row items-center gap-x-3 text-4xl md:flex'
             socials={game.socials}
           />
         </div>

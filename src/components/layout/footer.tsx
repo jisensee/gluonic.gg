@@ -9,7 +9,7 @@ import { LinkButton } from '../common/link-button'
 import { GluonicData } from '@/gluonic.data'
 
 const SocialButtons = () => (
-  <div className='flex flex-row gap-x-5 gap-y-3 justify-center flex-wrap'>
+  <div className='flex flex-row flex-wrap justify-center gap-x-5 gap-y-3'>
     <LinkButton
       href={GluonicData.discord}
       button={{
@@ -34,7 +34,7 @@ const SocialButtons = () => (
 )
 
 const OtherLinks = () => (
-  <div className='flex flex-col gap-y-3 items-center'>
+  <div className='flex flex-col items-center gap-y-3'>
     <Link className='text-lg' href='/privacy-tos' highlight>
       Privacy and Terms of Service
     </Link>

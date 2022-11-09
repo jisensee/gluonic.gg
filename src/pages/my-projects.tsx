@@ -14,7 +14,7 @@ import { FC, PropsWithChildren } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import classNames from 'classnames'
 import { withUser } from '@/server/server-utils'
-import { db } from '@/server/db'
+import { prisma } from '@/server/db/client'
 import { LinkButton } from '@/components/common/link-button'
 import { GameLink } from '@/components/common/game-link'
 import { PageTitle } from '@/components/common/page-title'
@@ -30,7 +30,7 @@ const ProjectCard: FC<ProjectCardProps> = ({
   abstract,
   children,
 }) => (
-  <Card className='flex flex-row items-center gap-x-5 gap-y-3 border-primary py-3 px-5 flex-wrap justify-center md:justify-start'>
+  <Card className='flex flex-row flex-wrap items-center justify-center gap-x-5 gap-y-3 border-primary py-3 px-5 md:justify-start'>
     <div className='flex flex-col gap-y-1'>
       <h2>{name}</h2>
       <GameLink gameKey={game.key} name={game.name} logoUrl={game.logoUrl} />
@@ -48,12 +48,12 @@ type Props = {
 
 export const getServerSideProps: GetServerSideProps<Props> = (context) =>
   withUser(context, async (user) => {
-    const authorships = await db.projectAuthorships.findMany({
+    const authorships = await prisma.projectAuthorships.findMany({
       where: { userId: user.id },
       include: { project: { include: { game: true } } },
     })
     const projects = authorships.map((authorship) => authorship.project)
-    const projectRequests = await db.projectRequest.findMany({
+    const projectRequests = await prisma.projectRequest.findMany({
       where: { user },
       include: { game: true },
     })
@@ -72,7 +72,7 @@ const RequestStatus: FC<RequestStatusProps> = ({
 }) => (
   <div
     className={classNames(
-      'flex flex-row gap-x-3 items-center text-xl',
+      'flex flex-row items-center gap-x-3 text-xl',
       className
     )}
   >
@@ -128,7 +128,7 @@ export default function MyProjectsPage({ projects, projectRequests }: Props) {
         >
           My Projects
         </PageTitle>
-        {projects.length === 0 && <p>{'You don\'t manage any projects yet.'}</p>}
+        {projects.length === 0 && <p>{"You don't manage any projects yet."}</p>}
         {projects.map((project) => (
           <ProjectCard
             key={project.id}

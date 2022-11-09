@@ -15,9 +15,9 @@ export default function AdminPage() {
         <title>Administration</title>
       </Head>
       <h1>Administration</h1>
-      <div className='flex flex-row gap-3 flex-wrap'>
+      <div className='flex flex-row flex-wrap gap-3'>
         <Link
-          className='rounded-2xl px-5 py-3 border border-primary hover:bg-base-300 text-3xl'
+          className='rounded-2xl border border-primary px-5 py-3 text-3xl hover:bg-base-300'
           href='/admin/project-requests'
         >
           Project reqests

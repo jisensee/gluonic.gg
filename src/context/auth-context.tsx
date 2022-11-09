@@ -6,28 +6,30 @@ import React, {
   useState,
 } from 'react'
 import { useSession } from 'next-auth/react'
-import {
-  OwnUserDataFragment,
-  useCurrentUserQuery,
-} from '@/generated/graphql-hooks'
+import { Socials, User } from '@prisma/client'
+import { trpc } from '@/utils/trpc'
+
+type UserType = User & { socials: Socials }
 
 export type AuthContext = {
-  user?: OwnUserDataFragment
+  user?: UserType
   loading: boolean
-  updateUser: (user: OwnUserDataFragment) => void
+  updateUser: (user: UserType) => void
 }
 
 const Context = React.createContext<AuthContext>({
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  updateUser: () => { },
+  updateUser: () => {},
   loading: true,
 })
 
 export const AuthContextProvider: FC<PropsWithChildren> = ({ children }) => {
-  const { refetch: fetchUser } = useCurrentUserQuery({}, { enabled: false })
+  const { refetch: fetchUser } = trpc.user.current.useQuery(undefined, {
+    enabled: false,
+  })
   const [userLoading, setUserLoading] = useState(false)
   const { status } = useSession()
-  const [user, setUser] = useState<OwnUserDataFragment>()
+  const [user, setUser] = useState<UserType>()
   const loading = userLoading || status === 'loading'
 
   useEffect(() => {
@@ -35,8 +37,8 @@ export const AuthContextProvider: FC<PropsWithChildren> = ({ children }) => {
       setUserLoading(true)
       fetchUser()
         .then(({ data }) => {
-          if (data?.currentUser) {
-            setUser(data.currentUser)
+          if (data) {
+            setUser(data)
           }
         })
         .finally(() => setUserLoading(false))

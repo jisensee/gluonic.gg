@@ -3,27 +3,25 @@ import {
   faGithub,
   faDiscord,
 } from '@fortawesome/free-brands-svg-icons'
-import { yupResolver } from '@hookform/resolvers/yup'
 import classNames from 'classnames'
 import { FC } from 'react'
 import { Input } from 'react-daisyui'
 import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
 import { FormField, IconInput, errorColor, SaveButton } from '../common/form'
-import { ProjectSocialsInputSchema } from '@/generated/graphql-yup-schema'
-import {
-  ProjectSocialsInput,
-  useUpdateProjectMutation,
-} from '@/generated/graphql-hooks'
 import { useStatusToast, mutationToToastStatus } from '@/context/toast-context'
+import { ProjectRouterInputs } from '@/utils/trpc-inputs'
+import { trpc } from '@/utils/trpc'
+
+type UpdateData = z.infer<typeof ProjectRouterInputs.update>
 
 export type ProjectSocialsFormProps = {
   className?: string
-  projectId: string
-  initialData: ProjectSocialsInput
+  initialData: UpdateData
 }
 export const ProjectSocialsForm: FC<ProjectSocialsFormProps> = ({
   className,
-  projectId,
   initialData,
 }) => {
   const {
@@ -32,17 +30,10 @@ export const ProjectSocialsForm: FC<ProjectSocialsFormProps> = ({
     formState: { errors, isValid },
   } = useForm({
     defaultValues: initialData,
-    resolver: yupResolver(ProjectSocialsInputSchema()),
+    resolver: zodResolver(ProjectRouterInputs.update),
     mode: 'onChange',
   })
-  const { mutate, status } = useUpdateProjectMutation()
-  const onSubmit = (data: ProjectSocialsInput) =>
-    mutate({
-      projectId,
-      data: {
-        socials: data,
-      },
-    })
+  const { mutate, status } = trpc.project.update.useMutation()
 
   useStatusToast(mutationToToastStatus(status), {
     success: {
@@ -55,33 +46,33 @@ export const ProjectSocialsForm: FC<ProjectSocialsFormProps> = ({
     <div className={classNames('flex flex-col gap-y-3', className)}>
       <h2>Socials</h2>
       <form
-        className='flex flex-col gap-y-3 responsive-form'
-        onSubmit={handleSubmit(onSubmit)}
+        className='responsive-form flex flex-col gap-y-3'
+        onSubmit={handleSubmit((d) => mutate(d))}
       >
-        <FormField label='Twitter' error={errors['twitter']}>
+        <FormField label='Twitter' error={errors.socials?.twitter}>
           <IconInput icon={faTwitter}>
             <Input
-              {...register('twitter')}
+              {...register('socials.twitter')}
               className='w-full'
-              color={errorColor(errors['twitter'])}
+              color={errorColor(errors.socials?.twitter)}
             />
           </IconInput>
         </FormField>
-        <FormField label='Github' error={errors['github']}>
+        <FormField label='Github' error={errors.socials?.github}>
           <IconInput icon={faGithub}>
             <Input
-              {...register('github')}
+              {...register('socials.github')}
               className='w-full'
-              color={errorColor(errors['github'])}
+              color={errorColor(errors.socials?.github)}
             />
           </IconInput>
         </FormField>
-        <FormField label='Discord' error={errors['discord']}>
+        <FormField label='Discord' error={errors.socials?.discord}>
           <IconInput icon={faDiscord}>
             <Input
-              {...register('discord')}
+              {...register('socials.discord')}
               className='w-full'
-              color={errorColor(errors['discord'])}
+              color={errorColor(errors.socials?.discord)}
             />
           </IconInput>
         </FormField>

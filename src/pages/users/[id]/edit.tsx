@@ -1,17 +1,15 @@
-import { FC, useEffect } from 'react'
+import type { FC } from 'react'
+import { useEffect } from 'react'
 import { Input, Textarea } from 'react-daisyui'
 import { useForm } from 'react-hook-form'
 import { faGlobe, faUser } from '@fortawesome/free-solid-svg-icons'
-import { yupResolver } from '@hookform/resolvers/yup'
 import {
   faDiscord,
   faGithub,
   faTwitter,
 } from '@fortawesome/free-brands-svg-icons'
-import {
-  OwnUserUpdateInput,
-  useUpdateOwnUserMutation,
-} from '@/generated/graphql-hooks'
+import type { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useAuthContext } from '@/context/auth-context'
 import {
   errorColor,
@@ -19,15 +17,18 @@ import {
   IconInput,
   SaveButton,
 } from '@/components/common/form'
-import { OwnUserUpdateInputSchema } from '@/generated/graphql-yup-schema'
 import { LinkButton } from '@/components/common/link-button'
 import { useDynamicDocumentTitle } from '@/hooks/misc-hooks'
 import { mutationToToastStatus, useStatusToast } from '@/context/toast-context'
+import { UserRouterInputs } from '@/utils/trpc-inputs'
+import { trpc } from '@/utils/trpc'
+
+type UpdateData = z.infer<typeof UserRouterInputs.updateOwn>
 
 type DataFormProps = {
-  initialData: OwnUserUpdateInput
+  initialData: UpdateData
   hasDefaultName: boolean
-  onSubmit: (data: OwnUserUpdateInput) => void
+  onSubmit: (data: UpdateData) => void
   loading: boolean
 }
 const UserDataForm: FC<DataFormProps> = ({
@@ -40,9 +41,9 @@ const UserDataForm: FC<DataFormProps> = ({
     register,
     handleSubmit,
     formState: { errors, isValid },
-  } = useForm<OwnUserUpdateInput>({
+  } = useForm({
     defaultValues: initialData,
-    resolver: yupResolver(OwnUserUpdateInputSchema()),
+    resolver: zodResolver(UserRouterInputs.updateOwn),
     mode: 'onChange',
     reValidateMode: 'onChange',
   })
@@ -60,7 +61,7 @@ const UserDataForm: FC<DataFormProps> = ({
         the moment there is no need to fill this out as a normal user.
       </p>
       <form
-        className='flex flex-col gap-y-3 responsive-form mt-2'
+        className='responsive-form mt-2 flex flex-col gap-y-3'
         onSubmit={handleSubmit(onSubmit)}
       >
         <div>
@@ -142,7 +143,7 @@ const UserDataForm: FC<DataFormProps> = ({
 }
 
 export default function UserEditPage() {
-  const { mutate, data, status } = useUpdateOwnUserMutation()
+  const { mutate, data, status } = trpc.user.updateOwn.useMutation()
   const { user, updateUser } = useAuthContext()
 
   useDynamicDocumentTitle(user?.name ?? 'Profile')
@@ -153,30 +154,26 @@ export default function UserEditPage() {
   })
 
   useEffect(() => {
-    if (data && user && data.updateOwnUser.name !== user.name) {
-      updateUser(data.updateOwnUser)
+    if (data && user && data.name !== user.name) {
+      updateUser(data)
     }
   }, [data, updateUser, user])
 
   return user ? (
     <UserDataForm
       initialData={{
-        name: user.hasDefaultName ? undefined : user.name,
-        bio: user.bio ?? undefined,
+        name: user.name ?? '',
+        bio: user.bio ?? '',
         socials: {
-          discord: user.socials.discord ?? undefined,
-          github: user.socials.github ?? undefined,
-          twitter: user.socials.twitter ?? undefined,
-          website: user.socials.website ?? undefined,
+          discord: user.socials.discord,
+          github: user.socials.github,
+          twitter: user.socials.twitter,
+          website: user.socials.website,
         },
       }}
       loading={status === 'loading'}
-      hasDefaultName={user.hasDefaultName}
-      onSubmit={(data) =>
-        mutate({
-          data,
-        })
-      }
+      hasDefaultName={user.address === user.name}
+      onSubmit={(data) => mutate(data)}
     />
   ) : null
 }

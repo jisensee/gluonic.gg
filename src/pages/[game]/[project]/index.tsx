@@ -1,12 +1,18 @@
-import { Game, Project, Socials, User } from '@prisma/client'
-import { GetServerSideProps } from 'next'
-import { faEdit, faGlobe } from '@fortawesome/free-solid-svg-icons'
-import { Button } from 'react-daisyui'
+import type { Game, Project, ProjectPost, Socials, User } from '@prisma/client'
+import type { GetServerSideProps } from 'next'
+import {
+  faAdd,
+  faEdit,
+  faGlobe,
+  faNewspaper,
+} from '@fortawesome/free-solid-svg-icons'
+import { Button, Divider } from 'react-daisyui'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { Maybe } from 'purify-ts'
+import type { Maybe } from 'purify-ts'
 import Head from 'next/head'
-import { FC, useState } from 'react'
-import { db } from '@/server/db'
+import type { FC } from 'react'
+import { useState } from 'react'
+import classNames from 'classnames'
 import { SocialLinks } from '@/components/social-links'
 import { Markdown } from '@/components/markdown'
 import { DonationButton } from '@/components/donation-button'
@@ -14,10 +20,14 @@ import { canUserManageProject, withOptionalUser } from '@/server/server-utils'
 import { Link } from '@/components/link'
 import { GameLink } from '@/components/common/game-link'
 import { LinkButton } from '@/components/common/link-button'
-import { FavoriteState, useFavoriteState } from '@/hooks/favorite-hooks'
-import { useToggleFavoriteProjectMutation } from '@/generated/graphql-hooks'
+import type { FavoriteState } from '@/hooks/favorite-hooks'
+import { useFavoriteState } from '@/hooks/favorite-hooks'
 import { FavoriteButton } from '@/components/favorite-button'
-import { Format } from '@/format'
+import { Post } from '@/components/project-post'
+import { UserLink } from '@/components/user-link'
+import { prisma } from '@/server/db/client'
+import { trpc } from '@/utils/trpc'
+import { ProjectHeader } from '@/components/project-header'
 
 type Props = {
   project: Project & {
@@ -25,6 +35,7 @@ type Props = {
     socials: Socials
     game: Game
   }
+  posts: ProjectPost[]
   authors: User[]
   canManage: boolean
   isFavorited: boolean
@@ -45,12 +56,13 @@ export const getServerSideProps: GetServerSideProps<Props> = async (context) =>
   withOptionalUser<Props>(context, async (maybeUser) => {
     const gameKey = context.query['game'] as string
     const projectKey = context.query['project'] as string
-    const project = await db.project.findFirst({
+    const project = await prisma.project.findFirst({
       where: { key: projectKey, game: { key: gameKey } },
       include: {
         _count: { select: { favoritedBy: true } },
         socials: true,
         game: true,
+        posts: { take: 3, orderBy: [{ publishedAt: 'desc' }] },
         projectAuthorships: { include: { user: true } },
       },
     })
@@ -61,7 +73,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (context) =>
 
     const user = maybeUser.extract()
     const isFavorited = user
-      ? await db.user
+      ? await prisma.user
           .findUnique({
             where: { id: user.id },
             include: { favoritedProjects: { where: { id: project.id } } },
@@ -76,6 +88,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (context) =>
         authors: project.projectAuthorships.map((a) => a.user),
         canManage,
         isFavorited,
+        posts: project.posts,
         canFavorite: !!user,
       },
     }
@@ -91,7 +104,7 @@ const Favorites: FC<FavoritesProps> = ({
   projectId,
   canFavorite,
 }) => {
-  const { mutateAsync } = useToggleFavoriteProjectMutation()
+  const { mutateAsync } = trpc.project.toggleFavorite.useMutation()
   const [serverFavorited, setServerFavorited] = useState(favorited)
   const { localFavoriteState, toggleFavorite } = useFavoriteState(
     {
@@ -99,10 +112,7 @@ const Favorites: FC<FavoritesProps> = ({
       count,
     },
     canFavorite
-      ? () =>
-          mutateAsync({ projectId: projectId }).then((r) =>
-            setServerFavorited(r.toggleFavoriteProject)
-          )
+      ? () => mutateAsync({ projectId: projectId }).then(setServerFavorited)
       : undefined
   )
 
@@ -112,24 +122,16 @@ const Favorites: FC<FavoritesProps> = ({
 export default function ProjectPage({
   project,
   authors,
+  posts,
   canManage,
   isFavorited,
   canFavorite,
 }: Props) {
-  const Header = () => (
+  const header = (
     <div className='flex flex-col gap-y-2'>
-      <div className='flex flex-row justify-between flex-wrap gap-3'>
-        <div className='flex flex-row gap-x-5 items-center'>
-          <img
-            className='h-16'
-            src={project.logoUrl ?? project.game.logoUrl}
-            alt={`${project.name} logo`}
-          />
-          <Link href={project.website} external>
-            <h1>{project.name}</h1>
-          </Link>
-        </div>
-        <div className='flex flex-row gap-x-8 items-center'>
+      <div className='flex flex-row flex-wrap justify-between gap-3'>
+        <ProjectHeader project={project} />
+        <div className='flex flex-row items-center gap-x-8'>
           <Favorites
             state={{
               count: project._count.favoritedBy,
@@ -157,8 +159,8 @@ export default function ProjectPage({
       />
     </div>
   )
-  const Actions = () => (
-    <div className='flex flex-row items-center gap-x-5 gap-y-2 flex-wrap justify-center xs:justify-start'>
+  const actions = (
+    <div className='flex flex-row flex-wrap items-center justify-center gap-x-5 gap-y-2 xs:justify-start'>
       <Link href={project.website} target='_blank'>
         <Button
           color='secondary'
@@ -178,15 +180,75 @@ export default function ProjectPage({
         </DonationButton>
       )}
       <SocialLinks
-        className='md:hidden flex flex-row gap-x-5 text-4xl'
+        className='flex flex-row gap-x-5 text-4xl md:hidden'
         socials={project.socials}
         compact
       />
       <SocialLinks
-        className='hidden md:flex flex-row gap-x-3 text-4xl'
+        className='hidden flex-row gap-x-3 text-4xl md:flex'
         socials={project.socials}
       />
     </div>
+  )
+  const projectUrl = `/${project.game.key}/${project.key}`
+  const [descriptionExpanded, setDescriptionExpanded] = useState(false)
+  const description = project.description && (
+    <div className='flex grow flex-col gap-y-3'>
+      <h2>Description</h2>
+      <Markdown.Display
+        className={classNames({
+          'max-md:max-h-40 max-md:overflow-hidden': !descriptionExpanded,
+        })}
+      >
+        {project.description}
+      </Markdown.Display>
+      <Button
+        className='md:hidden'
+        color='ghost'
+        onClick={() => setDescriptionExpanded((e) => !e)}
+      >
+        {descriptionExpanded ? 'Show less' : 'Show more'}
+      </Button>
+    </div>
+  )
+  const projectPosts = (
+    <>
+      <h2>Posts</h2>
+      {posts.map((post) => (
+        <Link href={`${projectUrl}/posts/${post.id}`} key={post.id}>
+          <Post.Preview
+            title={post.title}
+            abstract={post.abstract}
+            publishedAt={post.publishedAt}
+            shortAbstract
+          />
+        </Link>
+      ))}
+      {posts.length > 0 ? (
+        <Link href={`${projectUrl}/posts`}>
+          <Button
+            color='primary'
+            fullWidth
+            startIcon={<FontAwesomeIcon icon={faNewspaper} />}
+          >
+            All posts
+          </Button>
+        </Link>
+      ) : (
+        <span>No posts yet</span>
+      )}
+      {canManage && (
+        <Link href={`${projectUrl}/posts/new`}>
+          <Button
+            color='secondary'
+            fullWidth
+            startIcon={<FontAwesomeIcon icon={faAdd} />}
+          >
+            New post
+          </Button>
+        </Link>
+      )}
+    </>
   )
 
   return (
@@ -194,29 +256,28 @@ export default function ProjectPage({
       <Head>
         <title>{project.name}</title>
       </Head>
-      <Header />
-      <Actions />
+      {header}
+      {actions}
       <p className='text-lg'>{project.abstract}</p>
       {authors.length > 0 && (
         <h2>{authors.length > 1 ? 'Authors' : 'Author'}</h2>
       )}
-      <div className='flex flex-row gap-3 flex-wrap'>
+      <div className='flex flex-row flex-wrap gap-3'>
         {authors.map((author) => (
-          <Link
-            className='text-xl'
-            key={author.id}
-            href={`/users/${author.id}`}
-            highlight
-          >
-            {Format.username(author.name)}
-          </Link>
+          <UserLink key={author.id} id={author.id} name={author.name} />
         ))}
       </div>
-      {project.description && (
-        <Markdown.Display className='mt-2'>
-          {project.description}
-        </Markdown.Display>
-      )}
+      <Divider />
+      <div className='flex flex-col gap-3 md:flex-row'>
+        {description}
+        {description && (
+          <>
+            <div className='divider divider-horizontal max-md:hidden' />
+            <Divider className='md:hidden' />
+          </>
+        )}
+        <div className='flex flex-col gap-y-3 md:w-1/3'>{projectPosts}</div>
+      </div>
     </div>
   )
 }

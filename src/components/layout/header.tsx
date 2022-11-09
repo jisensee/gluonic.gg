@@ -10,14 +10,14 @@ import { useSignIn } from '@/hooks/auth-hooks'
 
 export const Header = () => {
   const { status } = useSession()
-  const { user, loading: authLoading } = useAuthContext()
+  const { loading: authLoading } = useAuthContext()
   const isPageLoading = useIsPageLoading()
   const { signOut } = useSignIn()
 
   return (
     <div>
-      <Navbar className='bg-base-300 rounded-b'>
-        <div className='main-container flex flex-row items-center px-2'>
+      <Navbar className='rounded-b bg-base-300'>
+        <div className='main-container flex flex-row items-center px-3'>
           <Link href='/'>
             <img src='/gluonic-logo.svg' className='h-12' alt='gluonic logo' />
           </Link>
@@ -32,7 +32,7 @@ export const Header = () => {
       </Navbar>
       <div
         className={classNames('h-1', {
-          'bg-secondary animate-pulse': isPageLoading,
+          'animate-pulse bg-secondary': isPageLoading,
           'bg-base-300': !isPageLoading,
         })}
       />

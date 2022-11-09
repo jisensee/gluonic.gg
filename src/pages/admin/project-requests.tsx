@@ -6,12 +6,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons'
 import Head from 'next/head'
 import { withUser } from '@/server/server-utils'
-import { db } from '@/server/db'
+import { prisma } from '@/server/db/client'
 import { GameLink } from '@/components/common/game-link'
-import { useProcessProjectRequestMutation } from '@/generated/graphql-hooks'
 import { useToast } from '@/context/toast-context'
 import { Link } from '@/components/link'
 import { Format } from '@/format'
+import { trpc } from '@/utils/trpc'
 
 type Props = {
   projectRequests: (ProjectRequest & { game: Game; user: User })[]
@@ -23,7 +23,7 @@ export const getServerSideProps: GetServerSideProps<Props> = (context) =>
       return Promise.resolve({ notFound: true })
     }
 
-    const projectRequests = await db.projectRequest.findMany({
+    const projectRequests = await prisma.projectRequest.findMany({
       where: {
         rejected: false,
       },
@@ -52,7 +52,7 @@ const ProjectCard: FC<ProjectCardProps> = ({
 }) => {
   const [key, setKey] = useState('')
   return (
-    <Card className='flex flex-row items-center gap-x-5 gap-y-3 border-primary py-3 px-5 flex-wrap justify-center md:justify-start'>
+    <Card className='flex flex-row flex-wrap items-center justify-center gap-x-5 gap-y-3 border-primary py-3 px-5 md:justify-start'>
       <div className='flex flex-col gap-y-1'>
         <h2>{request.projectName}</h2>
         <GameLink gameKey={game.key} name={game.name} logoUrl={game.logoUrl} />
@@ -68,7 +68,7 @@ const ProjectCard: FC<ProjectCardProps> = ({
       </div>
       <div className='hidden md:flex'>{request.projectAbstract}</div>
       <div className='grow' />
-      <div className='flex flex-row gap-x-3 items-center'>
+      <div className='flex flex-row items-center gap-x-3'>
         <label className='font-bold'>Project key:</label>
         <Input value={key} onChange={(e) => setKey(e.target.value)} />
       </div>
@@ -93,7 +93,7 @@ const ProjectCard: FC<ProjectCardProps> = ({
 }
 
 export default function ProjectRequestsPage({ projectRequests }: Props) {
-  const { mutate, isLoading } = useProcessProjectRequestMutation()
+  const { mutate, isLoading } = trpc.project.processRequest.useMutation()
   const [requests, setRequests] = useState(projectRequests)
   const { showToast } = useToast()
 

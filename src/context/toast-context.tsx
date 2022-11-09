@@ -38,8 +38,8 @@ const Toast: FC<ToastProps> = ({ config, onClose }) => {
   return (
     <Alert status={config.status}>
       <div className='flex flex-col'>
-        <div className='flex flex-row gap-x-5 items-center justify-between'>
-          <div className='font-bold text-lg' style={{ whiteSpace: 'nowrap' }}>
+        <div className='flex flex-row items-center justify-between gap-x-5'>
+          <div className='text-lg font-bold' style={{ whiteSpace: 'nowrap' }}>
             {config.title}
           </div>
           <Button onClick={onClose} color='ghost'>
@@ -53,7 +53,7 @@ const Toast: FC<ToastProps> = ({ config, onClose }) => {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
-const Context = createContext<ToastContext>({ showToast: () => { } })
+const Context = createContext<ToastContext>({ showToast: () => {} })
 
 export const useToast = () => useContext(Context)
 
@@ -75,7 +75,7 @@ export const ToastProvider = ({ children }: PropsWithChildren) => {
       <Context.Provider value={{ showToast }}>{children}</Context.Provider>
       <DaisyToast
         // className='w-full xs:w-20 sm:w-3/4 md:w-1/2 lg:w-1/3 max-w-xs'
-        className='!w-96 !right-0 !left-0'
+        className='!right-0 !left-0 !w-96'
         vertical='top'
         horizontal='center'
       >
@@ -99,6 +99,7 @@ export const mutationToToastStatus = (
   }
   return undefined
 }
+
 export const useStatusToast = (
   status: ToastStatus | undefined,
   config: Partial<Record<ToastStatus, Partial<ToastConfig>>>

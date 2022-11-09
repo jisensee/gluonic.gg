@@ -34,9 +34,10 @@ const MarkdownDisplay: FC<MarkdownDisplayProps> = ({
     )}
     <ReactMarkdown
       className={classNames(
-        'prose prose-headings:text-primary prose-headings:mt-0',
+        'prose prose-headings:mt-0 prose-headings:text-primary',
+        'prose-p:text-neutral-content',
         'prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-h4:text-lg',
-        'prose-a:text-secondary prose-a:font-bold prose-a:hover:text-primary prose-a:no-underline'
+        'prose-a:font-bold prose-a:text-secondary prose-a:no-underline prose-a:hover:text-primary'
       )}
       linkTarget='_blank'
     >
@@ -57,7 +58,7 @@ const EditorTextArea: FC<MarkdownEditorProps & { className?: string }> = ({
   className,
 }) => (
   <Textarea
-    className={classNames('rounded-xl max-h-96', className)}
+    className={classNames('max-h-96 rounded-xl', className)}
     rows={10}
     color='primary'
     value={text}
@@ -84,7 +85,7 @@ const TabbedEditor: FC<MarkdownEditorProps> = ({ text, onTextChange }) => {
           onTextChange={onTextChange}
         />
       ) : (
-        <MarkdownDisplay className='bg-base-300 border border-primary rounded-2xl p-3'>
+        <MarkdownDisplay className='rounded-2xl border border-primary bg-base-300 p-3'>
           {text}
         </MarkdownDisplay>
       )}
@@ -97,7 +98,7 @@ const MarkdownEditor: FC<MarkdownEditorProps> = ({ text, onTextChange }) => {
     <>
       <TabbedEditor text={text} onTextChange={onTextChange} />
       <Alert
-        className='italic bg-base-100 wrap'
+        className='wrap bg-base-100 italic'
         icon={<FontAwesomeIcon icon={faInfo} />}
       >
         <span>

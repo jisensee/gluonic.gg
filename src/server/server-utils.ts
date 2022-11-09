@@ -1,5 +1,4 @@
 import { ParsedUrlQuery } from 'querystring'
-import { ForbiddenError } from 'apollo-server-micro'
 import { Project, User, UserRole } from '@prisma/client'
 import {
   GetServerSidePropsContext,
@@ -9,8 +8,7 @@ import {
 } from 'next'
 import { Maybe, MaybeAsync } from 'purify-ts'
 import { AuthService } from './auth-service'
-import { Context } from './graphql/resolvers'
-import { db } from '@/server/db'
+import { prisma } from '@/server/db/client'
 
 export const withUser = <T>(
   context: GetServerSidePropsContext<ParsedUrlQuery, PreviewData>,
@@ -30,7 +28,7 @@ export const withOptionalUser = <T>(
 
 export const canUserManageProject = async (project: Project, user: User) =>
   user.role === UserRole.ADMIN ||
-  db.projectAuthorships
+  prisma.projectAuthorships
     .count({
       where: {
         projectId: project.id,
@@ -38,14 +36,3 @@ export const canUserManageProject = async (project: Project, user: User) =>
       },
     })
     .then((count) => count > 0)
-
-export const requireUserGql = <T>(
-  context: Context,
-  withValidUser: (user: User) => Promise<T>
-) => {
-  const user = context.user.extract()
-  if (user == null) {
-    throw ForbiddenError
-  }
-  return withValidUser(user)
-}

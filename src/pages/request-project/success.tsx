@@ -21,7 +21,7 @@ export default function SuccessfulProjectRequestPage() {
       <h3>What to do next?</h3>
       <p>
         <Link href='/my-projects' highlight>
-          {'Track your project\'s status'}
+          {"Track your project's status"}
         </Link>
       </p>
       <Link href='/request-project' highlight>

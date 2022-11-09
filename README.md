@@ -1,7 +1,7 @@
 # gluonic.gg
 
 The place to discover all the community projects for your favourite game!
-Exclusively launching with [Influence] and it's amazing community of builders.
+Exclusively launching with [Influence](https://influenceth.io) and it's amazing community of builders.
 
 [Check it out here!](https://gluonic.gg)
 
