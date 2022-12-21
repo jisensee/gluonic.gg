@@ -10,7 +10,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { useState } from 'react'
 import { useRouter } from 'next/router'
-import { canUserManageProject, withUser } from '@/server/server-utils'
+import { canUserManageProject, withOptionalUser } from '@/server/server-utils'
 import { prisma } from '@/server/db/client'
 import { UserLink } from '@/components/user-link'
 import { Post } from '@/components/project-post'
@@ -31,7 +31,8 @@ type Props = {
 }
 
 export const getServerSideProps: GetServerSideProps<Props> = async (context) =>
-  withUser(context, async (user) => {
+  withOptionalUser(context, async (maybeUser) => {
+    const user = maybeUser.extract()
     const id = context.query['id'] as string
     const post = await prisma.projectPost.findUnique({
       where: { id },
@@ -55,13 +56,18 @@ export const getServerSideProps: GetServerSideProps<Props> = async (context) =>
       take: 3,
     })
     const canManage =
+      user !== undefined &&
       post.authorId === user.id &&
       (await canUserManageProject(post.project, user))
 
     return { props: { post, otherPosts, canManage } }
   })
 
-export default function ProjectPostPage({ post, otherPosts }: Props) {
+export default function ProjectPostPage({
+  post,
+  otherPosts,
+  canManage,
+}: Props) {
   const gameKey = post.project.game.key
   const projectKey = post.project.key
   const projectUrl = `/${gameKey}/${projectKey}`
@@ -103,21 +109,23 @@ export default function ProjectPostPage({ post, otherPosts }: Props) {
     <div className='flex grow flex-col gap-y-2'>
       <div className='flex flex-row gap-x-3 justify-between'>
         <ProjectHeader project={post.project} />
-        <Dropdown
-          toggle={<FontAwesomeIcon icon={faEllipsisVertical} size='2x' />}
-          items={[
-            {
-              text: 'Edit',
-              icon: faEdit,
-              href: `${projectUrl}/posts/${post.id}/edit`,
-            },
-            {
-              text: 'Delete',
-              icon: faTrash,
-              onClick: () => setDeleteModalOpen(true),
-            },
-          ]}
-        />
+        {canManage && (
+          <Dropdown
+            toggle={<FontAwesomeIcon icon={faEllipsisVertical} size='2x' />}
+            items={[
+              {
+                text: 'Edit',
+                icon: faEdit,
+                href: `${projectUrl}/posts/${post.id}/edit`,
+              },
+              {
+                text: 'Delete',
+                icon: faTrash,
+                onClick: () => setDeleteModalOpen(true),
+              },
+            ]}
+          />
+        )}
       </div>
       <span>
         <span className='italic'>
