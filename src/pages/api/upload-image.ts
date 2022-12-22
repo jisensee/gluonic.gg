@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto'
-import { NextApiRequest, NextApiResponse } from 'next'
+import { NextApiRequest, NextApiResponse } from 'next/types'
 import nextConnect from 'next-connect'
 import aws from 'aws-sdk'
 import multer from 'multer'
@@ -54,7 +54,7 @@ const deleteOldLogo = async (oldLogoUrl: string) => {
 }
 
 apiRoute.post(async (req: MulterRequest, res: NextApiResponse) => {
-  const user = (await AuthService.findUserFromRequest(req)).extract()
+  const user = await AuthService.findUserFromRequest(req)
   if (!user) {
     return res.status(401)
   }

@@ -1,3 +1,5 @@
+'use client'
+
 import { faDonate } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { FC, PropsWithChildren, ReactNode, useState } from 'react'

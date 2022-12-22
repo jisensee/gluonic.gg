@@ -1,3 +1,5 @@
+'use client'
+
 import { Subscription } from '@prisma/client'
 import { FC } from 'react'
 import {
@@ -18,7 +20,6 @@ const SubscriptionManager: FC<{
 export const NotificationManager = () => {
   const { data } = trpc.subscription.withPushNotification.useQuery()
   const sendNotification = usePushNotification()
-  console.log('test NotificationManager', { sendNotification })
 
   return data && sendNotification ? (
     <SubscriptionManager

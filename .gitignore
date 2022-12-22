@@ -3,6 +3,7 @@
 public/sw.js
 public/sw.js.map
 public/workbox*
+public/worker-*
 .env
 
 # dependencies
@@ -42,3 +43,5 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+.vscode

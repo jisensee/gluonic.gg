@@ -1,4 +1,4 @@
-import { NextApiRequest, NextApiResponse } from 'next'
+import { NextApiRequest, NextApiResponse } from 'next/types'
 import { CredentialInput } from 'next-auth/providers/credentials'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import NextAuth from 'next-auth'
@@ -30,12 +30,19 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse) {
         credentials?.message ?? '{}',
         credentials?.signature ?? '',
         req
+      ).then((user) =>
+        user
+          ? {
+              id: user.id,
+              name: user.name,
+              email: user.id,
+            }
+          : null
       ),
   })
 
   const isDefaultSigninPage =
     req.method === 'GET' && (req.query.nextauth?.includes('signin') ?? false)
-
   return await NextAuth(req, res, {
     providers: isDefaultSigninPage ? [] : [ethProvider],
     session: {

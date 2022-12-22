@@ -36,5 +36,4 @@ export const publishSubscriptionMessage = async (
   await client.channels
     .get(AblyChannels.subscriptions)
     .publish(message.type, message)
-  console.log('sent message to ably', message)
 }

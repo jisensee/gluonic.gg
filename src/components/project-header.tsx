@@ -1,3 +1,5 @@
+'use client'
+
 import { Game, Project } from '@prisma/client'
 import { FC } from 'react'
 import { Link } from './link'

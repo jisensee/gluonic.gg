@@ -3,7 +3,7 @@ const defaultTheme = require('tailwindcss/defaultTheme')
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    './src/pages/**/*.{ts,tsx}',
+    './src/app/**/*.{ts,tsx}',
     './src/components/**/*.{ts,tsx}',
     './node_modules/daisyui/dist/**/*.{js,css}',
     './node_modules/react-daisyui/dist/**/*.{js,css,cjs}',

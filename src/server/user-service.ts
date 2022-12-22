@@ -1,9 +1,7 @@
 import { User } from '@prisma/client'
-import { maybePromise } from '@/fp-utils'
 import { prisma } from '@/server/db/client'
 
-const findById = (id: string) =>
-  maybePromise(prisma.user.findUnique({ where: { id } }))
+const findById = (id: string) => prisma.user.findUnique({ where: { id } })
 
 const findOrCreate = async (address: string) => {
   const user = await prisma.user.findUnique({ where: { address } })
@@ -19,14 +17,6 @@ const findOrCreate = async (address: string) => {
   return user
 }
 
-const findSocials = (user: User) =>
-  maybePromise(
-    prisma.user.findUnique({
-      where: { id: user.id },
-      include: { socials: true },
-    })
-  ).map((u) => u.socials)
-
 const findFavoritedProjectIds = async (user: User) =>
   (await prisma.user
     .findUnique({
@@ -38,6 +28,5 @@ const findFavoritedProjectIds = async (user: User) =>
 export const UserService = {
   findById,
   findOrCreate,
-  findSocials,
   findFavoritedProjectIds,
 }

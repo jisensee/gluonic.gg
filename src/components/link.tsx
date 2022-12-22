@@ -1,10 +1,9 @@
-import { UrlObject } from 'url'
 import { FC, HTMLAttributeAnchorTarget, PropsWithChildren } from 'react'
 import NextLink from 'next/link'
 import classNames from 'classnames'
 
 type LinkProps = {
-  href: string | UrlObject
+  href: string
   target?: HTMLAttributeAnchorTarget
   external?: boolean
   highlight?: boolean
@@ -17,16 +16,17 @@ export const Link: FC<PropsWithChildren<LinkProps>> = ({
   children,
   highlight,
   className,
-}) => (
-  <NextLink href={href} passHref legacyBehavior>
-    <a
+}) => {
+  return (
+    <NextLink
       className={classNames(
         { 'font-bold text-secondary hover:text-primary ': highlight },
         className
       )}
+      href={href as Route}
       target={external ? '_blank' : target}
     >
       {children}
-    </a>
-  </NextLink>
-)
+    </NextLink>
+  )
+}

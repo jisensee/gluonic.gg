@@ -38,7 +38,7 @@ export const usePushNotification = (): SendNotification | undefined => {
   const sendNotification = useCallback(
     (title: string, config: { body?: string; url?: string } | undefined) => {
       reg?.showNotification(title, {
-        icon: '/gluonic-logo.svg',
+        icon: '/gluonic-logo-small.svg',
         body: config?.body,
         data: {
           url: config?.url,

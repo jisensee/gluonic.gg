@@ -1,3 +1,5 @@
+'us client'
+
 import { zodResolver } from '@hookform/resolvers/zod'
 import { FC } from 'react'
 import { Input, Textarea } from 'react-daisyui'
