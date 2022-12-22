@@ -8,6 +8,7 @@ import { FC, PropsWithChildren, ReactElement, ReactNode } from 'react'
 import { createClient, WagmiConfig } from 'wagmi'
 import { config } from '@fortawesome/fontawesome-svg-core'
 import Head from 'next/head'
+import { configureAbly } from '@ably-labs/react-hooks'
 import { trpc } from '../utils/trpc'
 import { Layout } from '../components/layout/layout'
 import { AuthContextProvider } from '@/context/auth-context'
@@ -16,6 +17,7 @@ import '@fortawesome/fontawesome-svg-core/styles.css'
 import { WalletContextProvider } from '@/hooks/wallet-context'
 import { ToastProvider } from '@/context/toast-context'
 import { CookieBanner } from '@/components/cookie-banner'
+import { NotificationManager } from '@/components/notification-manager'
 
 config.autoAddCss = false
 
@@ -36,6 +38,11 @@ const wagmiClient = createClient({
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { refetchOnWindowFocus: false } },
+})
+
+// configureAbly({ key: process.env.ABLY_SUBSCRIBE_KEY })
+configureAbly({
+  key: '-02qsw.bPCLWQ:MP23-q6rH359txfwV4BjbN1-SH5WJfJr5bI03CTS_FY',
 })
 
 const Providers = ({
@@ -66,6 +73,7 @@ const App: FC<CustomAppProps> = ({ Component, pageProps }) => {
       <AppHead />
       <Providers pageProps={pageProps}>
         {getLayout(<Component {...pageProps} />)}
+        <NotificationManager />
         <CookieBanner />
       </Providers>
       <Analytics />

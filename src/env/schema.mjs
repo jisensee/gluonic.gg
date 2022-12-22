@@ -24,6 +24,8 @@ export const serverSchema = z.object({
   S3_SECRET_KEY: z.string(),
   S3_ENDPOINT: z.string(),
   S3_BUCKET: z.string(),
+  ABLY_SUBSCRIBE_KEY: z.string(),
+  ABLY_PUBLISH_KEY: z.string(),
 })
 
 /**

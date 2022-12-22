@@ -2,6 +2,7 @@ import {
   faAdd,
   faAngleDown,
   faCogs,
+  faEnvelope,
   faSignOut,
   faTableList,
   faUser,
@@ -33,15 +34,20 @@ export const UserMenu: FC<UserMenuProps> = ({ signOut }) => {
       }
       items={[
         {
+          text: 'Administration',
+          icon: faCogs,
+          href: '/admin',
+          hidden: user.role !== 'ADMIN',
+        },
+        {
           text: 'My Profile',
           icon: faUser,
           href: '/profile',
         },
         {
-          text: 'Administration',
-          icon: faCogs,
-          href: '/admin',
-          hidden: user.role !== 'ADMIN',
+          text: 'My Subscriptions',
+          icon: faEnvelope,
+          href: '/subscriptions',
         },
         {
           text: 'My Projects',

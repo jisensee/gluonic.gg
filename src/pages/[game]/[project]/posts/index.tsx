@@ -22,7 +22,14 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
     where: {
       key: projectKey,
     },
-    include: { posts: true, game: true },
+    include: {
+      posts: {
+        orderBy: {
+          publishedAt: 'desc',
+        },
+      },
+      game: true,
+    },
   })
 
   if (!project) {

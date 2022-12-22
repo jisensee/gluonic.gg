@@ -35,7 +35,11 @@ export const Modal: FC<ModalProps> = ({
         />
       </DaisyModal.Header>
       <DaisyModal.Body>{children}</DaisyModal.Body>
-      {actions && <DaisyModal.Actions>{actions}</DaisyModal.Actions>}
+      {actions && (
+        <DaisyModal.Actions className='flex-wrap gap-y-2'>
+          {actions}
+        </DaisyModal.Actions>
+      )}
     </DaisyModal>
   )
 }
