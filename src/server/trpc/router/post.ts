@@ -4,6 +4,7 @@ import { PrismaClient } from '@prisma/client'
 import { protectedProcedure, router } from '../trpc'
 import { PostRouterInputs } from '@/utils/trpc-inputs'
 import { canUserManageProject } from '@/server/server-utils'
+import { publishSubscriptionMessage } from '@/utils/ably-types'
 
 const verifyPostExists = async (postId: string, prisma: PrismaClient) => {
   const post = await prisma.projectPost.findUnique({
@@ -22,6 +23,7 @@ export const postRouter = router({
     .mutation(async ({ input, ctx: { user, prisma } }) => {
       const project = await prisma.project.findUnique({
         where: { id: input.projectId },
+        include: { game: true },
       })
       if (!project) {
         throw new TRPCError({ code: 'NOT_FOUND' })
@@ -30,7 +32,7 @@ export const postRouter = router({
         throw new TRPCError({ code: 'FORBIDDEN' })
       }
 
-      return await prisma.projectPost.create({
+      const created = await prisma.projectPost.create({
         data: {
           authorId: user.id,
           projectId: input.projectId,
@@ -39,6 +41,27 @@ export const postRouter = router({
           body: input.post.body,
         },
       })
+
+      await publishSubscriptionMessage({
+        type: 'newProjectPost',
+        game: {
+          id: project.game.id,
+          key: project.game.key,
+          name: project.game.name,
+        },
+        project: {
+          id: project.id,
+          key: project.key,
+          name: project.name,
+        },
+        post: {
+          id: created.id,
+          title: created.title,
+          authorName: user.name ?? 'Anonymous',
+        },
+      })
+
+      return created
     }),
   edit: protectedProcedure
     .input(PostRouterInputs.edit)

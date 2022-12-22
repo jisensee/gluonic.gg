@@ -20,6 +20,7 @@ model Game {
   projectRequests ProjectRequest[]
   tags            Tag[]
   socialsId       String
+  subscriptions   Subscription[]
 }
 
 model Project {
@@ -41,6 +42,7 @@ model Project {
   published          Boolean              @default(false)
   lastUpdate         DateTime?
   favoritedBy        User[]
+  subscriptions      Subscription[]
 }
 
 model ProjectPost {
@@ -74,6 +76,7 @@ model User {
   projectRequests    ProjectRequest[]
   socialsId          String
   favoritedProjects  Project[]
+  subscriptions      Subscription[]
 }
 
 enum ProjectAuthorRole {
@@ -122,4 +125,19 @@ model ProjectRequest {
   game            Game     @relation(fields: [gameId], references: [id])
   userId          String
   gameId          String
+}
+
+enum SubscriptionType {
+  PUSH_NOTIFICATION
+}
+
+model Subscription {
+  id        String             @id @default(uuid())
+  user      User               @relation(fields: [userId], references: [id])
+  userId    String
+  game      Game?              @relation(fields: [gameId], references: [id])
+  gameId    String?
+  project   Project?           @relation(fields: [projectId], references: [id])
+  projectId String?
+  type      SubscriptionType[]
 }

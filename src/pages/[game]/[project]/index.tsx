@@ -1,8 +1,16 @@
-import type { Game, Project, ProjectPost, Socials, User } from '@prisma/client'
+import type {
+  Game,
+  Project,
+  ProjectPost,
+  Socials,
+  Subscription,
+  User,
+} from '@prisma/client'
 import type { GetServerSideProps } from 'next'
 import {
   faAdd,
   faEdit,
+  faEnvelope,
   faGlobe,
   faNewspaper,
 } from '@fortawesome/free-solid-svg-icons'
@@ -13,6 +21,7 @@ import Head from 'next/head'
 import type { FC } from 'react'
 import { useState } from 'react'
 import classNames from 'classnames'
+import { useRouter } from 'next/router'
 import { SocialLinks } from '@/components/social-links'
 import { Markdown } from '@/components/markdown'
 import { DonationButton } from '@/components/donation-button'
@@ -28,18 +37,21 @@ import { UserLink } from '@/components/user-link'
 import { prisma } from '@/server/db/client'
 import { trpc } from '@/utils/trpc'
 import { ProjectHeader } from '@/components/project-header'
+import { SubscriptionModal } from '@/components/subscription-modal'
+import { Tooltip } from '@/components/common/tooltip'
 
 type Props = {
   project: Project & {
-    _count: { favoritedBy: number }
+    _count: { favoritedBy: number; subscriptions: number }
     socials: Socials
     game: Game
   }
+  subscription?: Subscription
   posts: ProjectPost[]
   authors: User[]
   canManage: boolean
   isFavorited: boolean
-  canFavorite: boolean
+  loggedIn: boolean
 }
 
 const projectVisible = async (project: Project, maybeUser: Maybe<User>) => {
@@ -54,12 +66,13 @@ const projectVisible = async (project: Project, maybeUser: Maybe<User>) => {
 
 export const getServerSideProps: GetServerSideProps<Props> = async (context) =>
   withOptionalUser<Props>(context, async (maybeUser) => {
+    const user = maybeUser.extract()
     const gameKey = context.query['game'] as string
     const projectKey = context.query['project'] as string
     const project = await prisma.project.findFirst({
       where: { key: projectKey, game: { key: gameKey } },
       include: {
-        _count: { select: { favoritedBy: true } },
+        _count: { select: { favoritedBy: true, subscriptions: true } },
         socials: true,
         game: true,
         posts: { take: 3, orderBy: [{ publishedAt: 'desc' }] },
@@ -71,7 +84,15 @@ export const getServerSideProps: GetServerSideProps<Props> = async (context) =>
       return Promise.resolve({ notFound: true })
     }
 
-    const user = maybeUser.extract()
+    const subscription = user
+      ? await prisma.subscription.findFirst({
+          where: {
+            userId: user.id,
+            projectId: project.id,
+          },
+        })
+      : undefined
+
     const isFavorited = user
       ? await prisma.user
           .findUnique({
@@ -88,8 +109,9 @@ export const getServerSideProps: GetServerSideProps<Props> = async (context) =>
         authors: project.projectAuthorships.map((a) => a.user),
         canManage,
         isFavorited,
+        subscription: subscription ?? undefined,
         posts: project.posts,
-        canFavorite: !!user,
+        loggedIn: !!user,
       },
     }
   })
@@ -125,20 +147,50 @@ export default function ProjectPage({
   posts,
   canManage,
   isFavorited,
-  canFavorite,
+  loggedIn,
+  subscription,
 }: Props) {
+  const [subscriptionModalOpen, setSubscriptionModalOpen] = useState(false)
+  const router = useRouter()
+
+  const subscriberCount = (
+    <div className='flex flex-row gap-x-2 items-center'>
+      <span className='font-bold'>{project._count.subscriptions}</span>
+      <FontAwesomeIcon
+        className={classNames('cursor-pointer text-2xl', {
+          'text-primary': !!subscription,
+        })}
+        icon={faEnvelope}
+        onClick={loggedIn ? () => setSubscriptionModalOpen(true) : undefined}
+      />
+    </div>
+  )
+
+  const subscriberSection = loggedIn ? (
+    subscriberCount
+  ) : (
+    <Tooltip
+      className='text-md mr-4 whitespace-nowrap'
+      position='left'
+      content='Sign in to subscribe to projects'
+    >
+      {subscriberCount}
+    </Tooltip>
+  )
+
   const header = (
     <div className='flex flex-col gap-y-2'>
       <div className='flex flex-row flex-wrap justify-between gap-3'>
         <ProjectHeader project={project} />
         <div className='flex flex-row items-center gap-x-8'>
+          {subscriberSection}
           <Favorites
             state={{
               count: project._count.favoritedBy,
               favorited: isFavorited,
             }}
             projectId={project.id}
-            canFavorite={canFavorite}
+            canFavorite={loggedIn}
           />
           {canManage && (
             <LinkButton
@@ -253,6 +305,16 @@ export default function ProjectPage({
 
   return (
     <div className='flex flex-col gap-y-2'>
+      <SubscriptionModal
+        open={subscriptionModalOpen}
+        onClose={() => setSubscriptionModalOpen(false)}
+        subscription={subscription}
+        project={project}
+        onChange={() => {
+          setSubscriptionModalOpen(false)
+          router.replace(router.asPath)
+        }}
+      />
       <Head>
         <title>{project.name}</title>
       </Head>
