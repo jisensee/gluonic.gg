@@ -1,3 +1,5 @@
+'use client'
+
 import { IconDefinition } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { FC, ReactNode } from 'react'
@@ -31,7 +33,8 @@ export const Dropdown: FC<DropdownProps> = ({ toggle, items }) => (
           </>
         )
         return (
-          <DDropdown.Item
+          <li
+            className=''
             key={key}
             onClick={() => {
               item.onClick?.()
@@ -51,7 +54,7 @@ export const Dropdown: FC<DropdownProps> = ({ toggle, items }) => (
                 {content}
               </div>
             )}
-          </DDropdown.Item>
+          </li>
         )
       })}
     </DDropdown.Menu>

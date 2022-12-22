@@ -1,14 +1,13 @@
-import { NextApiRequest } from 'next'
+import { NextApiRequest } from 'next/types'
 import { getToken } from 'next-auth/jwt'
 import { SiweMessage } from 'siwe'
 import { getCsrfToken } from 'next-auth/react'
 import { UserService } from './user-service'
-import { maybePromise } from '@/fp-utils'
 
 const findUserFromRequest = (req: NextApiRequest) =>
-  maybePromise(getToken({ req }))
-    .map((jwt) => jwt.email ?? '')
-    .chain(UserService.findById)
+  getToken({ req }).then((token) =>
+    token?.email ? UserService.findById(token?.email) : undefined
+  )
 
 const buildNextAuthUrl = () => {
   if (process.env.NEXTAUTH_URL) {
@@ -28,27 +27,21 @@ const signInUser = async (
   try {
     const siwe = new SiweMessage(JSON.parse(message ?? '{}'))
     const nextAuthUrl = buildNextAuthUrl()
-
     if (!nextAuthUrl) {
-      return null
+      return
     }
 
-    const nextAuthHost = new URL(nextAuthUrl).host
-    if (siwe.domain !== nextAuthHost) {
-      return null
-    }
+    const result = await siwe.verify({
+      signature,
+      domain: new URL(nextAuthUrl).host,
+      nonce: await getCsrfToken({ req }),
+    })
 
-    if (siwe.nonce !== (await getCsrfToken({ req }))) {
-      return null
+    if (result.success) {
+      return await UserService.findOrCreate(siwe.address)
     }
-    await siwe.validate(signature)
-    const user = await UserService.findOrCreate(siwe.address)
-
-    return {
-      id: user.id,
-      email: user.id,
-      name: user.name,
-    }
+    console.log('Sign in with Ethereum failed', result.error)
+    return
   } catch (e) {
     console.error('Auth error', e)
     return null

@@ -5,7 +5,7 @@
  */
 !process.env.SKIP_ENV_VALIDATION && (await import('./src/env/server.mjs'))
 
-import nextPwa from 'next-pwa'
+import nextPwa from '@ducanh2912/next-pwa'
 import { withSuperjson } from 'next-superjson'
 
 const withPwa = nextPwa({
@@ -13,13 +13,11 @@ const withPwa = nextPwa({
   disable: process.env.NODE_ENV === 'development',
 })
 
-/** @type {import("next").NextConfig} */
+/** @type {import("next/types").NextConfig} */
 const config = {
-  reactStrictMode: true,
-  swcMinify: true,
-  i18n: {
-    locales: ['en'],
-    defaultLocale: 'en',
+  experimental: {
+    appDir: true,
+    typedRoutes: true,
   },
 }
 // @ts-ignore

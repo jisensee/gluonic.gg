@@ -1,3 +1,5 @@
+'use client'
+
 import {
   faGlobe,
   faMagnifyingGlass,
@@ -15,7 +17,7 @@ import { FavoriteState, useFavoriteState } from '@/hooks/favorite-hooks'
 
 export type GameProjectCardProps = {
   className?: string
-  detailLink: string
+  detailLink: Route
   detailText: ReactNode
   detailIcon: IconDefinition
   title: string
