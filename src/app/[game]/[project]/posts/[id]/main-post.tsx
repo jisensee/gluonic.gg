@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Game, Project } from '@prisma/client'
 import { useRouter } from 'next/navigation'
 import { FC, useState } from 'react'
+import { Route } from 'next'
 import { Dropdown } from '@/components/common/dropdown'
 import { ConfirmModal } from '@/components/common/modal'
 import { ProjectHeader } from '@/components/project-header'
@@ -56,7 +57,9 @@ export const MainPost: FC<MainPostProps> = ({
   })
 
   const onDelete = () => {
-    deletePost({ postId }).then(() => router.push(`${projectUrl}/posts`))
+    deletePost({ postId }).then(() =>
+      router.push(`${projectUrl}/posts` as Route)
+    )
   }
 
   const deleteModal = (
@@ -73,7 +76,7 @@ export const MainPost: FC<MainPostProps> = ({
 
   const mainPost = (
     <div className='flex grow flex-col gap-y-2'>
-      <div className='flex flex-row gap-x-3 justify-between'>
+      <div className='flex flex-row justify-between gap-x-3'>
         <ProjectHeader project={project} />
         {canManage && (
           <Dropdown

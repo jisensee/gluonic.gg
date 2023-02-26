@@ -1,6 +1,7 @@
 import { FC, HTMLAttributeAnchorTarget, PropsWithChildren } from 'react'
 import NextLink from 'next/link'
 import classNames from 'classnames'
+import { Route } from 'next'
 
 type LinkProps = {
   href: string

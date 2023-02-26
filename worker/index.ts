@@ -1,6 +1,5 @@
 self.addEventListener('notificationclick', (event: NotificationEvent) => {
   const url = event.notification.data.url as string | undefined
-  console.log('notification click url', url)
   if (url) {
     event.waitUntil(
       self.clients.matchAll({ type: 'window' }).then(async (windowClients) => {

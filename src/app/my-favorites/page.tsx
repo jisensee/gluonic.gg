@@ -33,7 +33,7 @@ export default async function MyFavoritesPage() {
     <div className='flex flex-col gap-y-3'>
       <PageTitle>{metadata.title}</PageTitle>
       {projects.length === 0 && <p>You have not favorited any projects yet.</p>}
-      <FavoriteList projects={projects} />
+      <FavoriteList projects={projects} data-superjson />
     </div>
   )
 }

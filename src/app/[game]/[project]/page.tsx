@@ -62,13 +62,16 @@ const ProjectPage: NextPage<Params> = async ({
   const header = (
     <div className='flex flex-col gap-y-2'>
       <div className='flex flex-row flex-wrap justify-between gap-3'>
-        <ProjectHeader project={project} />
+        <ProjectHeader project={project} data-superjson />
         <div className='flex flex-row items-center gap-x-8'>
           <Subscribers
             loggedIn={!!user}
             project={project}
             subscription={subscription ?? undefined}
             subscriberCount={project._count.subscriptions}
+            hasVerifiedEmail={user?.emailVerified}
+            receiveEmails={user?.receiveEmails}
+            data-superjson
           />
           <Favorites
             state={{

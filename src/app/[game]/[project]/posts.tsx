@@ -19,7 +19,7 @@ export const Posts: FC<PostsProps> = ({
   <>
     <h2>Posts</h2>
     {posts.map((post) => (
-      <Link href={`${projectUrl}/posts/${post.id}` as Route} key={post.id}>
+      <Link href={`${projectUrl}/posts/${post.id}`} key={post.id}>
         <PostPreview
           title={post.title}
           abstract={post.abstract}

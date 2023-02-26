@@ -1,4 +1,5 @@
 import { Realtime } from 'ably/promises'
+import { env } from '@/env.mjs'
 
 export type GameOrProject = {
   id: string
@@ -32,7 +33,7 @@ export const AblyChannels = {
 export const publishSubscriptionMessage = async (
   message: SubscriptionMessage
 ) => {
-  const client = new Realtime(process.env.ABLY_PUBLISH_KEY ?? '')
+  const client = new Realtime(env.ABLY_PUBLISH_KEY ?? '')
   await client.channels
     .get(AblyChannels.subscriptions)
     .publish(message.type, message)

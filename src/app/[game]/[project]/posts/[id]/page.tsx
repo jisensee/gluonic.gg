@@ -1,5 +1,4 @@
 import { notFound } from 'next/navigation'
-import { cache } from 'react'
 import { Sidebar } from './sidebar'
 import { MainPost } from './main-post'
 import { canUserManageProject, getUser } from '@/server/server-utils'
@@ -10,12 +9,12 @@ type Params = {
   id: string
 }
 
-const getPost = cache((id: string) =>
+// const getPost = cache((id: string) =>
+const getPost = (id: string) =>
   prisma.projectPost.findUnique({
     where: { id },
     include: { author: true, project: { include: { game: true } } },
   })
-)
 
 export const generateMetadata: GenerateMetadata<Params> = async ({
   params,
@@ -86,6 +85,7 @@ const ProjectPostPage: NextPage<Params> = async ({ params }) => {
         postId={post.id}
         canManage={canManage}
         project={post.project}
+        data-superjson
       />
       {otherPosts.length > 0 && (
         <>

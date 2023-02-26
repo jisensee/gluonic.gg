@@ -3,6 +3,7 @@
 import { FC } from 'react'
 import { z } from 'zod'
 import { useRouter } from 'next/navigation'
+import { Route } from 'next'
 import { trpc } from '@/utils/trpc'
 import { postDataInput } from '@/utils/trpc-inputs'
 import { PostForm } from '@/components/post-form'
@@ -37,7 +38,7 @@ export const EditPostForm: FC<EditFormProps> = ({
     mutateAsync({
       post: d,
       postId,
-    }).then((updated) => push(`${projectUrl}/posts/${updated.id}`))
+    }).then((updated) => push(`${projectUrl}/posts/${updated.id}` as Route))
 
   return (
     <PostForm

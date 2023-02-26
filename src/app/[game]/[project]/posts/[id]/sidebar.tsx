@@ -21,7 +21,7 @@ export const Sidebar: FC<SidebarProps> = ({
   <div className='flex flex-col gap-y-3 md:w-1/3'>
     <h3>Other posts</h3>
     {posts.map((post) => (
-      <Link key={post.id} href={`${projectUrl}/posts/${post.id}` as Route}>
+      <Link key={post.id} href={`${projectUrl}/posts/${post.id}`}>
         <PostPreview
           title={post.title}
           abstract={post.abstract}

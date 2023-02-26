@@ -46,6 +46,8 @@ export const UserRouterInputs = {
     name: z.string().max(25),
     bio: z.string().max(300),
     socials: socialsInput,
+    email: z.string().email().optional().or(z.literal('')),
+    receiveEmails: z.boolean(),
   }),
 }
 

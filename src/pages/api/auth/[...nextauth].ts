@@ -3,6 +3,7 @@ import { CredentialInput } from 'next-auth/providers/credentials'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import NextAuth from 'next-auth'
 import { AuthService } from '@/server/auth-service'
+import { env } from '@/env.mjs'
 
 type EthProviderCredentials = {
   message: CredentialInput
@@ -48,6 +49,6 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse) {
     session: {
       strategy: 'jwt',
     },
-    secret: process.env.NETXAUTH_SECRET,
+    secret: env.NEXTAUTH_SECRET,
   })
 }

@@ -12,10 +12,14 @@ type ExpandedSubscription = Subscription & {
 
 export type SubscriptionListProps = {
   subscriptions: ExpandedSubscription[]
+  hasVerifiedEmail: boolean
+  receiveEmails: boolean
 }
 
 export const SubscriptionList: FC<SubscriptionListProps> = ({
   subscriptions,
+  hasVerifiedEmail,
+  receiveEmails,
 }) => {
   const [managingSubscription, setManagingSubscription] =
     useState<ExpandedSubscription>()
@@ -31,6 +35,8 @@ export const SubscriptionList: FC<SubscriptionListProps> = ({
         onChange={() => {
           setManagingSubscription(undefined)
         }}
+        hasVerifiedEmail={hasVerifiedEmail}
+        receiveEmails={receiveEmails}
       />
 
       {subscriptions.map((sub) => (
@@ -40,6 +46,15 @@ export const SubscriptionList: FC<SubscriptionListProps> = ({
               name={sub.project.name}
               logoUrl={sub.project.logoUrl ?? sub.project.game.logoUrl}
               href={`/${sub.project.game.key}/${sub.project.key}`}
+              types={sub.type}
+              onManage={() => setManagingSubscription(sub)}
+            />
+          )}
+          {sub.game && (
+            <SubscriptionEntry
+              name={sub.game.name}
+              logoUrl={sub.game.logoUrl}
+              href={`/${sub.game.key}`}
               types={sub.type}
               onManage={() => setManagingSubscription(sub)}
             />

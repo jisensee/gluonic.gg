@@ -1,7 +1,6 @@
 import { Project, User, UserRole } from '@prisma/client'
 
 import { getServerSession } from 'next-auth/next'
-import { cache } from 'react'
 import { prisma } from '@/server/db/client'
 
 export const canUserManageProject = async (project: Project, user: User) =>
@@ -15,7 +14,8 @@ export const canUserManageProject = async (project: Project, user: User) =>
     })
     .then((count) => count > 0)
 
-export const getUser = cache(async () => {
+// export const getUser = cache(async () => {
+export const getUser = async () => {
   const session = await getServerSession()
   const userId = session?.user?.email
   if (userId) {
@@ -23,4 +23,4 @@ export const getUser = cache(async () => {
       (await prisma.user.findUnique({ where: { id: userId } })) ?? undefined
     )
   }
-})
+}

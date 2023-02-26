@@ -1,4 +1,5 @@
 import { faClose, faGlobe } from '@fortawesome/free-solid-svg-icons'
+import Image from 'next/image'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { FC, PropsWithChildren, ReactNode } from 'react'
 import { Button, Modal } from 'react-daisyui'
@@ -7,6 +8,7 @@ import { mainnet } from 'wagmi/chains'
 import { InjectedConnector } from 'wagmi/connectors/injected'
 import { MetaMaskConnector } from 'wagmi/connectors/metaMask'
 import { WalletConnectConnector } from 'wagmi/connectors/walletConnect'
+import { env } from '@/env.mjs'
 import { useToast } from '@/context/toast-context'
 
 type ConnectButtonProps = {
@@ -82,18 +84,23 @@ export const WalletConnectModal: FC<WalletConnectModalProps> = ({
         {topText}
         <ConnectButton
           icon={
-            <img
-              src='/wallet-connect-logo.svg'
-              className='h-8 w-8'
-              alt='wallet connect logo'
-            />
+            <div className='relative h-8 w-8'>
+              <Image
+                src='/wallet-connect-logo.svg'
+                alt='wallet connect logo'
+                fill
+              />
+            </div>
           }
           isConnecting={isConnecting}
           onClick={() =>
             connect(
               new WalletConnectConnector({
                 chains: [mainnet],
-                options: { qrcode: true },
+                options: {
+                  projectId: env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID ?? '',
+                  showQrModal: true,
+                },
               })
             )
           }
@@ -102,11 +109,9 @@ export const WalletConnectModal: FC<WalletConnectModalProps> = ({
         </ConnectButton>
         <ConnectButton
           icon={
-            <img
-              src='/metamask-logo.svg'
-              className='h-8 w-8'
-              alt='metamask logo'
-            />
+            <div className='relative h-8 w-8'>
+              <Image src='/metamask-logo.svg' alt='metamask logo' fill />
+            </div>
           }
           isConnecting={isConnecting}
           onClick={() => connect(new MetaMaskConnector({ chains: [mainnet] }))}

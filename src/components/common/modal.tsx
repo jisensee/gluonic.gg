@@ -1,5 +1,3 @@
-'use client'
-
 import { faClose } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { FC, PropsWithChildren, ReactNode } from 'react'

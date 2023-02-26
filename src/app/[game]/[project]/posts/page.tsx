@@ -1,6 +1,5 @@
 import { faAdd } from '@fortawesome/free-solid-svg-icons'
 import { notFound } from 'next/navigation'
-import { cache } from 'react'
 import { Metadata } from 'next/types'
 import { prisma } from '@/server/db/client'
 import { ProjectHeader } from '@/components/project-header'
@@ -10,7 +9,8 @@ import { PostPreview } from '@/components/post-preview'
 import { canUserManageProject, getUser } from '@/server/server-utils'
 import { NextPage } from '@/utils/next-types'
 
-const getProject = cache((gameKey: string, projectKey: string) =>
+// const getProject = cache((gameKey: string, projectKey: string) =>
+const getProject = (gameKey: string, projectKey: string) =>
   prisma.project.findFirst({
     where: {
       key: projectKey,
@@ -27,7 +27,6 @@ const getProject = cache((gameKey: string, projectKey: string) =>
       },
     },
   })
-)
 
 type Params = {
   game: string
@@ -62,13 +61,13 @@ const ProjectPostsPage: NextPage<Params> = async ({ params }) => {
     )
   return (
     <div className='flex flex-col gap-y-3'>
-      <div className='flex flex-row justify-between w-full'>
-        <ProjectHeader project={project} />
+      <div className='flex w-full flex-row justify-between'>
+        <ProjectHeader project={project} data-superjson />
         {writePostButton('max-md:hidden')}
       </div>
       {writePostButton('md:hidden')}
       {project.posts.map((post) => (
-        <Link href={`${projectUrl}/posts/${post.id}` as Route} key={post.id}>
+        <Link href={`${projectUrl}/posts/${post.id}`} key={post.id}>
           <PostPreview
             title={post.title}
             abstract={post.abstract}

@@ -34,7 +34,9 @@ export const subscriptionRouter = router({
       z.object({
         projectId: z.string().nullish(),
         gameId: z.string().nullish(),
-        type: z.array(z.enum([SubscriptionType.PUSH_NOTIFICATION])),
+        type: z.array(
+          z.enum([SubscriptionType.PUSH_NOTIFICATION, SubscriptionType.EMAIL])
+        ),
       })
     )
     .mutation(

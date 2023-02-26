@@ -1,5 +1,4 @@
 import { notFound } from 'next/navigation'
-import { cache } from 'react'
 import { Metadata } from 'next/types'
 import { ManageProjectTabs } from './tabs'
 import { canUserManageProject, getUser } from '@/server/server-utils'
@@ -13,12 +12,12 @@ export type Params = {
   project: string
 }
 
-const getProject = cache((gameKey: string, projectKey: string) =>
+// const getProject = cache((gameKey: string, projectKey: string) =>
+const getProject = (gameKey: string, projectKey: string) =>
   prisma.project.findFirst({
     where: { key: projectKey, game: { key: gameKey } },
     include: { game: true, socials: true },
   })
-)
 
 export const metadata: Metadata = {
   title: 'Manage',
