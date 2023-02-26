@@ -1,4 +1,5 @@
 import { FC, ReactNode } from 'react'
+import Image from 'next/image'
 import { Alert, Button } from 'react-daisyui'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEthereum } from '@fortawesome/free-brands-svg-icons'
@@ -44,18 +45,18 @@ export const DonationModal: FC<DonationModalProps> = ({
         {donationButton('eth', <FontAwesomeIcon icon={faEthereum} size='2x' />)}
         {donationButton(
           'dai',
-          <img className='h-7' src='/dai-logo.svg' alt='DAI logo' />
+          <div className='relative h-7 w-7'>
+            <Image src='/dai-logo.svg' alt='DAI logo' fill />
+          </div>
         )}
         {donationButton(
           'usdc',
-          <img className='h-7' src='/usdc-logo.svg' alt='USDC logo' />
+          <div className='relative h-7 w-7'>
+            <Image src='/usdc-logo.svg' alt='USDC logo' fill />
+          </div>
         )}
         <Button onClick={() => onCopy(targetAddress)}>{buttonText}</Button>
-        <Alert
-          className='text-xl'
-          status='info'
-          icon={<FontAwesomeIcon icon={faInfo} />}
-        >
+        <Alert status='info' icon={<FontAwesomeIcon icon={faInfo} />}>
           Please edit the donation amount manually in your wallet when prompted.
         </Alert>
       </div>

@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import {
   faGlobe,
   faMagnifyingGlass,
@@ -14,10 +15,14 @@ import { Link } from './link'
 import { SocialLinks } from './social-links'
 import { FavoriteButton } from './favorite-button'
 import { FavoriteState, useFavoriteState } from '@/hooks/favorite-hooks'
+import {
+  Subscribers,
+  SubscribersProps,
+} from '@/app/[game]/[project]/subscribers'
 
 export type GameProjectCardProps = {
   className?: string
-  detailLink: Route
+  detailLink: string
   detailText: ReactNode
   detailIcon: IconDefinition
   title: string
@@ -27,6 +32,8 @@ export type GameProjectCardProps = {
   socials: Socials
   favoriteState?: FavoriteState
   onFavoriteToggle?: () => void
+  subscribers?: number
+  subscribersProps?: SubscribersProps
 }
 export const GameProjectCard: FC<GameProjectCardProps> = ({
   detailLink,
@@ -39,21 +46,23 @@ export const GameProjectCard: FC<GameProjectCardProps> = ({
   socials,
   favoriteState,
   onFavoriteToggle,
+  subscribersProps,
   className,
 }) => (
   <Card
     side
     className={classNames(
-      'flex flex-col gap-y-3 border-primary bg-base-200 py-3 px-5',
+      'flex flex-col gap-y-3 border-primary bg-base-200 px-5 py-3',
       className
     )}
   >
     <div className='flex flex-row items-start gap-x-3 md:items-center'>
-      <Link className='hidden w-16 md:flex' href={detailLink}>
-        <img
-          className='w-full min-w-full'
+      <Link className='relative hidden h-12 w-12 md:flex' href={detailLink}>
+        <Image
+          className='object-contain'
           src={logoUrl}
           alt={`${title} logo`}
+          fill
         />
       </Link>
       <div className='flex grow flex-row flex-wrap items-center gap-x-5'>
@@ -70,13 +79,14 @@ export const GameProjectCard: FC<GameProjectCardProps> = ({
           tooltipPosition='bottom'
         />
       </div>
-      {favoriteState && (
-        <FavoriteButton
-          className='mt-1 md:mt-0'
-          state={favoriteState}
-          onToggle={onFavoriteToggle}
-        />
-      )}
+      <div className='flex flex-row items-center gap-x-5 pt-2 md:pt-0'>
+        {subscribersProps && (
+          <Subscribers {...subscribersProps} data-superjson />
+        )}
+        {favoriteState && (
+          <FavoriteButton state={favoriteState} onToggle={onFavoriteToggle} />
+        )}
+      </div>
     </div>
     <p>{abstract}</p>
     <div className='flex flex-col items-center justify-center gap-x-5 gap-y-3 sm:flex-row'>
@@ -106,6 +116,8 @@ export type ProjectCardProps = {
   game: Game
   favoriteState: FavoriteState
   onFavoriteToggle?: () => void
+  onSubscribeClick?: () => void
+  subscribersProps?: SubscribersProps
 }
 export const ProjectCard: FC<ProjectCardProps> = ({
   project,
@@ -113,6 +125,7 @@ export const ProjectCard: FC<ProjectCardProps> = ({
   socials,
   favoriteState,
   onFavoriteToggle,
+  subscribersProps,
 }) => {
   const { localFavoriteState, toggleFavorite } = useFavoriteState(
     favoriteState,
@@ -131,6 +144,7 @@ export const ProjectCard: FC<ProjectCardProps> = ({
       socials={socials}
       favoriteState={localFavoriteState}
       onFavoriteToggle={toggleFavorite}
+      subscribersProps={subscribersProps}
     />
   )
 }

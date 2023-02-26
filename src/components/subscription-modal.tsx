@@ -1,5 +1,5 @@
 import { Game, Project, Subscription, SubscriptionType } from '@prisma/client'
-import { FC, useCallback, useEffect, useState } from 'react'
+import { FC, useCallback, useEffect, useMemo, useState } from 'react'
 import { Button, Toggle } from 'react-daisyui'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrash } from '@fortawesome/free-solid-svg-icons'
@@ -36,6 +36,8 @@ export type SubscriptionModalProps = {
   project?: Project
   game?: Game
   onChange: () => void
+  hasVerifiedEmail: boolean
+  receiveEmails: boolean
 }
 
 export const SubscriptionModal: FC<SubscriptionModalProps> = ({
@@ -45,6 +47,8 @@ export const SubscriptionModal: FC<SubscriptionModalProps> = ({
   project,
   game,
   onChange,
+  hasVerifiedEmail,
+  receiveEmails,
 }) => {
   const [checkedTypes, setCheckedTypes] = useState<Set<SubscriptionType>>(
     new Set(subscription?.type ?? [])
@@ -127,18 +131,32 @@ export const SubscriptionModal: FC<SubscriptionModalProps> = ({
 
   const noTypesSelected = checkedTypes.size === 0
 
+  const emailDisabledText = useMemo(() => {
+    if (hasVerifiedEmail && !receiveEmails) {
+      return 'You need to enable email receipt in your profile settings to receive email notifications.'
+    }
+    if (!hasVerifiedEmail) {
+      return 'You have to verify your email to receive email notifications.'
+    }
+    return undefined
+  }, [hasVerifiedEmail, receiveEmails])
+
   const toggle = useCallback(
-    (type: SubscriptionType) => (
-      <div className='flex flex-row gap-x-3 items-center'>
-        <label className='flex flex-row gap-x-3 items-center cursor-pointer'>
-          <Toggle
-            color='primary'
-            checked={checkedTypes.has(type)}
-            onChange={() => toggleType(type)}
-          />
-          {getTextForSubscriptionType(type)}
-          <FontAwesomeIcon icon={getIconForSubscriptionType(type)} />
-        </label>
+    (type: SubscriptionType, disabledText?: string) => (
+      <div className='flex flex-col gap-y-2'>
+        <div className='flex flex-row items-center gap-x-3'>
+          <label className='flex cursor-pointer flex-row items-center gap-x-3'>
+            <Toggle
+              color='primary'
+              checked={checkedTypes.has(type)}
+              onChange={() => toggleType(type)}
+              disabled={!!disabledText}
+            />
+            <FontAwesomeIcon icon={getIconForSubscriptionType(type)} />
+            {getTextForSubscriptionType(type)}
+          </label>
+        </div>
+        {disabledText && <span className='text-error'>{disabledText}</span>}
       </div>
     ),
     [checkedTypes, toggleType]
@@ -160,11 +178,16 @@ export const SubscriptionModal: FC<SubscriptionModalProps> = ({
               onClick={onUnsubscribe}
               color='error'
               startIcon={<FontAwesomeIcon icon={faTrash} />}
+              loading={deleteStatus === 'loading'}
             >
               Unsubscribe
             </Button>
           )}
-          <SaveButton onClick={onSave} disabled={noTypesSelected}>
+          <SaveButton
+            onClick={onSave}
+            disabled={noTypesSelected}
+            loading={upsertStatus === 'loading'}
+          >
             {subscription ? 'Save Changes' : 'Subscribe'}
           </SaveButton>
         </>
@@ -182,8 +205,9 @@ export const SubscriptionModal: FC<SubscriptionModalProps> = ({
           text='Get notified whenever a new post is published for '
         />
       )}
-      <div className='flex flex-col gap-y-2 my-4'>
+      <div className='my-4 flex flex-col gap-y-5'>
         {toggle('PUSH_NOTIFICATION')}
+        {toggle('EMAIL', emailDisabledText)}
       </div>
       {noTypesSelected && (
         <span className='text-error'>

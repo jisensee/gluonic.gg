@@ -1,4 +1,5 @@
 import classNames from 'classnames'
+import Image from 'next/image'
 import { FC } from 'react'
 import { Link } from '../link'
 
@@ -19,7 +20,14 @@ export const GameLink: FC<GameLinkProps> = ({
     href={`/${gameKey}`}
     highlight
   >
-    <img className='h-8' src={logoUrl} alt={`${name} logo`} />
+    <div className='relative h-8 w-8'>
+      <Image
+        className='object-contain'
+        src={logoUrl}
+        alt={`${name} logo`}
+        fill
+      />
+    </div>
     <span className='text-lg font-bold'>{name}</span>
   </Link>
 )

@@ -63,7 +63,11 @@ export const PostForm: FC<PostFormProps> = ({
           )}
         />
       </FormField>
-      <SaveButton type='submit' disabled={!isValid || isLoading || !isDirty}>
+      <SaveButton
+        type='submit'
+        disabled={!isValid || !isDirty}
+        loading={isLoading}
+      >
         {saveText}
       </SaveButton>
     </form>

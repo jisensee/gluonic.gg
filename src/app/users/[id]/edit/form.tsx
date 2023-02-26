@@ -1,9 +1,13 @@
 'use client'
 
 import type { FC } from 'react'
-import { Input, Textarea } from 'react-daisyui'
+import { Button, Input, Textarea, Toggle } from 'react-daisyui'
 import { useForm } from 'react-hook-form'
-import { faGlobe, faUser } from '@fortawesome/free-solid-svg-icons'
+import {
+  faCheck,
+  faGlobe,
+  faTimesCircle,
+} from '@fortawesome/free-solid-svg-icons'
 import {
   faDiscord,
   faGithub,
@@ -11,13 +15,13 @@ import {
 } from '@fortawesome/free-brands-svg-icons'
 import type { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   errorColor,
   FormField,
   IconInput,
   SaveButton,
 } from '@/components/common/form'
-import { LinkButton } from '@/components/common/link-button'
 import { UserRouterInputs } from '@/utils/trpc-inputs'
 import { trpc } from '@/utils/trpc'
 import { mutationToToastStatus, useStatusToast } from '@/context/toast-context'
@@ -27,10 +31,12 @@ type UpdateData = z.infer<typeof UserRouterInputs.updateOwn>
 type DataFormProps = {
   initialData: UpdateData
   hasDefaultName: boolean
+  emailVerified: boolean
 }
 export const UserDataForm: FC<DataFormProps> = ({
   initialData,
   hasDefaultName,
+  emailVerified,
 }) => {
   const {
     register,
@@ -42,27 +48,67 @@ export const UserDataForm: FC<DataFormProps> = ({
     mode: 'onChange',
     reValidateMode: 'onChange',
   })
-  const { mutate, status } = trpc.user.updateOwn.useMutation()
+  const { mutate, status, data } = trpc.user.updateOwn.useMutation()
+  const {
+    mutate: resendVerificationEmail,
+    status: resendVerificationMailStatus,
+  } = trpc.user.resendVerificationEmail.useMutation()
   const onSubmit = handleSubmit((d) => mutate(d))
   const loading = status === 'loading'
 
+  useStatusToast(mutationToToastStatus(resendVerificationMailStatus), {
+    success: {
+      title: 'Verification email sent.',
+    },
+    error: {
+      title: 'Could not send verification email.',
+    },
+  })
+
   useStatusToast(mutationToToastStatus(status), {
-    success: { title: 'Profile successfully saved!' },
+    success: {
+      title: 'Profile successfully saved!',
+      message: data?.emailVerificationStarted
+        ? `A verification email has been sent to your address. Please follow it's instructions to verify your email.`
+        : undefined,
+    },
     error: { title: 'Could not save profile data!' },
   })
 
+  const emailVerifiedText = (
+    <span className='flex flex-row items-center gap-x-2 text-success'>
+      <FontAwesomeIcon icon={faCheck} />
+      Verified
+    </span>
+  )
+  const emailNotVerifiedText = (
+    <span className='flex flex-row items-center gap-x-2 text-error'>
+      <FontAwesomeIcon icon={faTimesCircle} />
+      Not verified
+    </span>
+  )
+
+  const emailLabelSuffix = () => {
+    if (data?.emailVerificationStarted) {
+      return emailNotVerifiedText
+    }
+    if (emailVerified) {
+      return emailVerifiedText
+    }
+    if (initialData.email && initialData.email !== '') {
+      return emailNotVerifiedText
+    }
+    return null
+  }
+  const emailLabel = (
+    <div className='flex w-full flex-row justify-between gap-x-3'>
+      <span>Email</span>
+      {emailLabelSuffix()}
+    </div>
+  )
+
   return (
     <>
-      <div className='flex flex-row items-center'>
-        <h1 className='grow'>Edit profile data</h1>
-        <LinkButton href='/profile' icon={faUser} button={{ color: 'primary' }}>
-          View profile
-        </LinkButton>
-      </div>
-      <p>
-        This data will only be publicly visible if you are a project author. At
-        the moment there is no need to fill this out as a normal user.
-      </p>
       <form
         className='responsive-form mt-2 flex flex-col gap-y-3'
         onSubmit={onSubmit}
@@ -91,6 +137,35 @@ export const UserDataForm: FC<DataFormProps> = ({
                 color={errorColor(errors['bio'])}
               />
             </FormField>
+            <FormField
+              label={emailLabel}
+              error={errors['email']}
+              infoMessage='Your email will only be used to send you notifications that you opted into explicitly. It will never be visible for others.'
+            >
+              <Input
+                {...register('email')}
+                className='w-full'
+                color={errorColor(errors['email'])}
+              />
+            </FormField>
+            {emailVerified && (
+              <FormField
+                label='Receive emails'
+                infoMessage='Turn this off to not receive any emails regardless of your subscriptions.'
+              >
+                <Toggle {...register('receiveEmails')} color='primary' />
+              </FormField>
+            )}
+            {!emailVerified && initialData.email && (
+              <Button
+                type='button'
+                loading={resendVerificationMailStatus === 'loading'}
+                color='primary'
+                onClick={() => resendVerificationEmail()}
+              >
+                Resend verification email
+              </Button>
+            )}
           </div>
         </div>
         <div>

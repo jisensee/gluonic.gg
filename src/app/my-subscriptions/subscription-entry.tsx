@@ -1,5 +1,4 @@
-'use client'
-
+import Image from 'next/image'
 import { SubscriptionType } from '@prisma/client'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { FC } from 'react'
@@ -22,23 +21,30 @@ export const SubscriptionEntry: FC<EntryProps> = ({
   types,
   onManage,
 }) => (
-  <div className='items-center flex flex-row gap-x-7'>
+  <div className='flex flex-row items-center gap-x-7'>
     <Link className='flex flex-row items-center gap-x-2' href={href}>
-      <img className='h-10 w-10' src={logoUrl} alt={name} />
+      <div className='relative h-10 w-10'>
+        <Image className='object-contain' src={logoUrl} alt={name} fill />
+      </div>
       <h3>{name}</h3>
     </Link>
-    <Tooltip content='Manage this subscription' position='left'>
+    <Tooltip content='Manage this subscription' position='top'>
       <div
-        className='flex flex-row gap-x-1 items-center cursor-pointer'
+        className='flex cursor-pointer flex-row items-center gap-x-3'
         onClick={onManage}
       >
-        {types.map(getIconForSubscriptionType).map((icon) => (
-          <FontAwesomeIcon
-            key={icon.iconName}
-            className='text-xl'
-            icon={icon}
-          />
-        ))}
+        {types
+          .map(getIconForSubscriptionType)
+          .map(
+            (icon) =>
+              icon && (
+                <FontAwesomeIcon
+                  key={icon.iconName}
+                  className='text-xl'
+                  icon={icon}
+                />
+              )
+          )}
       </div>
     </Tooltip>
   </div>

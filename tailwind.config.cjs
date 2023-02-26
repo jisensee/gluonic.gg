@@ -1,9 +1,10 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const defaultTheme = require('tailwindcss/defaultTheme')
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    './src/pages/**/*.{ts,tsx}',
+    './src/app/**/*.{ts,tsx}',
     './src/components/**/*.{ts,tsx}',
     './node_modules/daisyui/dist/**/*.{js,css}',
     './node_modules/react-daisyui/dist/**/*.{js,css,cjs}',
@@ -15,16 +16,13 @@ module.exports = {
     },
     extend: {},
   },
-  plugins: [
-    require('daisyui'),
-    require('@tailwindcss/typography'),
-    require('@tailwindcss/line-clamp'),
-  ],
+  plugins: [require('daisyui'), require('@tailwindcss/typography')],
   daisyui: {
     themes: [
       {
         dark: {
           primary: '#dca54c',
+          primaryContent: '#c3c3c7',
           secondary: '#00aed6',
           accent: '#00c7b2',
           neutral: '#171618',

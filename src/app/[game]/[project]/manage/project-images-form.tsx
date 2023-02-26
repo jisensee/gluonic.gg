@@ -1,4 +1,5 @@
 import type { FC } from 'react'
+import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { Button } from 'react-daisyui'
 import { useForm } from 'react-hook-form'
@@ -64,7 +65,11 @@ export const ProjectImagesForm: FC<ProjectImagesFormProps> = ({
 
       <p>Set a new logo for your project.</p>
       <div className='flex flex-row items-center gap-x-3'>
-        {logoUrl && <img className='h-20' src={logoUrl} alt='logo' />}
+        {logoUrl && (
+          <div className='relative h-20 w-20'>
+            <Image className='object-contain' src={logoUrl} alt='logo' fill />
+          </div>
+        )}
         <div className='flex flex-col gap-y-2'>
           <input
             className='rounded-xl bg-neutral py-0 pl-0 pr-5 file:mr-5 file:cursor-pointer file:rounded-xl file:border-0 file:bg-primary file:px-5 file:py-3 file:hover:bg-primary-focus'
@@ -75,9 +80,7 @@ export const ProjectImagesForm: FC<ProjectImagesFormProps> = ({
                   return fl?.length === 1 ? undefined : 'File is required'
                 },
                 correctType: (fl) => {
-                  return ['image/png', 'image/svg+xml'].includes(
-                    fl?.item(0)?.type ?? ''
-                  )
+                  return ['image/png'].includes(fl?.item(0)?.type ?? '')
                     ? undefined
                     : 'Filetype is not supported'
                 },
@@ -89,13 +92,17 @@ export const ProjectImagesForm: FC<ProjectImagesFormProps> = ({
                 },
               },
             })}
-            accept='.svg,.png'
+            accept='.png'
           />
           {errors['logo']?.message && (
             <span className='text-error'>{errors['logo'].message}</span>
           )}
         </div>
       </div>
+      <span className='italic'>
+        Please make sure that your logo is somewhat square so it looks good
+        everywhere.
+      </span>
       <Button
         className='mt-2 w-full md:w-52'
         color='primary'

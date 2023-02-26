@@ -1,12 +1,13 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 // @ts-check
 /**
  * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.
  * This is especially useful for Docker builds.
  */
-!process.env.SKIP_ENV_VALIDATION && (await import('./src/env/server.mjs'))
+!process.env.SKIP_ENV_VALIDATION && (await import('./src/env.mjs'))
 
 import nextPwa from '@ducanh2912/next-pwa'
-import { withSuperjson } from 'next-superjson'
+import { env } from './src/env.mjs'
 
 const withPwa = nextPwa({
   dest: 'public',
@@ -18,7 +19,50 @@ const config = {
   experimental: {
     appDir: true,
     typedRoutes: true,
+    swcPlugins: [['next-superjson-plugin', {}]],
+    outputFileTracingExcludes: {
+      '*': ['**swc/core**'],
+    },
+  },
+  images: {
+    // @ts-ignore
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: `${env.S3_BUCKET}.${env.S3_ENDPOINT}`,
+      },
+      {
+        protocol: 'https',
+        hostname: 'gluonic.gg',
+      },
+      env.VERCEL_URL
+        ? {
+            protocol: 'https',
+            hostname: env.VERCEL_URL,
+          }
+        : undefined,
+      env.NEXT_PUBLIC_NODE_ENV === 'development'
+        ? {
+            protocol: 'http',
+            hostname: 'localhost',
+          }
+        : undefined,
+    ].filter((p) => !!p),
+  },
+  webpack: (config, { isServer }) => {
+    config.module = {
+      ...config.module,
+      // Suppress 'Critical dependency: the request of a dependency is an expression' warning for keyv
+      exprContextCritical: false,
+    }
+    if (!isServer) {
+      config.resolve.fallback.net = false
+      config.resolve.fallback.tls = false
+      config.resolve.fallback.fs = false
+    }
+    return config
   },
 }
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-export default withSuperjson()(withPwa(config))
+export default withPwa(config)

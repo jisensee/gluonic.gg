@@ -1,10 +1,12 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
 import { PrismaClient } from '@prisma/client'
+import NewPostEmail from '../../../../react-email/emails/new-post'
 import { protectedProcedure, router } from '../trpc'
 import { PostRouterInputs } from '@/utils/trpc-inputs'
 import { canUserManageProject } from '@/server/server-utils'
 import { publishSubscriptionMessage } from '@/utils/ably-types'
+import { EmailMessage, EmailService } from '@/server/email-service'
 
 const verifyPostExists = async (postId: string, prisma: PrismaClient) => {
   const post = await prisma.projectPost.findUnique({
@@ -42,24 +44,56 @@ export const postRouter = router({
         },
       })
 
-      await publishSubscriptionMessage({
-        type: 'newProjectPost',
-        game: {
-          id: project.game.id,
-          key: project.game.key,
-          name: project.game.name,
+      const subscriptions = await prisma.subscription.findMany({
+        where: {
+          projectId: input.projectId,
+          type: { has: 'EMAIL' },
+          user: { emailVerified: true, email: { not: null } },
         },
-        project: {
-          id: project.id,
-          key: project.key,
-          name: project.name,
-        },
-        post: {
-          id: created.id,
-          title: created.title,
-          authorName: user.name ?? 'Anonymous',
-        },
+        include: { user: true },
       })
+
+      const emails: EmailMessage[] = subscriptions.flatMap((subscription) => {
+        const email = () => (
+          <NewPostEmail
+            projectId={project.id}
+            projectName={project.name}
+            projectLogoUrl={project.logoUrl ?? undefined}
+            postTitle={created.title}
+            postAbstract={created.abstract}
+            postLink={`/${project.game.key}/${project.key}/posts/${created.id}`}
+            recipientUserId={subscription.user.id}
+          />
+        )
+        return [
+          {
+            email,
+            recipient: subscription.user,
+            subject: `New post for ${project.name}`,
+          },
+        ]
+      })
+      await Promise.all([
+        EmailService.sendEmails(emails),
+        publishSubscriptionMessage({
+          type: 'newProjectPost',
+          game: {
+            id: project.game.id,
+            key: project.game.key,
+            name: project.game.name,
+          },
+          project: {
+            id: project.id,
+            key: project.key,
+            name: project.name,
+          },
+          post: {
+            id: created.id,
+            title: created.title,
+            authorName: user.name ?? 'Anonymous',
+          },
+        }),
+      ])
 
       return created
     }),

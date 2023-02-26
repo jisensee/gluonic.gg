@@ -1,6 +1,6 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["filteredRelationCount"]
+  previewFeatures = ["filteredRelationCount", "jsonProtocol"]
 }
 
 datasource db {
@@ -40,6 +40,7 @@ model Project {
   gameId             String
   socialsId          String
   published          Boolean              @default(false)
+  initialPublishDone Boolean              @default(true)
   lastUpdate         DateTime?
   favoritedBy        User[]
   subscriptions      Subscription[]
@@ -63,20 +64,31 @@ enum UserRole {
   ADMIN
 }
 
+model EmailVerificationCode {
+  id         String   @id @default(uuid())
+  validUntil DateTime
+  userId     String   @unique
+  user       User     @relation(fields: [userId], references: [id])
+}
+
 model User {
-  id                 String               @id @default(uuid())
-  address            String               @unique
-  name               String?
-  bio                String?
-  joinedAt           DateTime
-  role               UserRole             @default(USER)
-  socials            Socials              @relation(fields: [socialsId], references: [id])
-  posts              ProjectPost[]
-  projectAuthorships ProjectAuthorships[]
-  projectRequests    ProjectRequest[]
-  socialsId          String
-  favoritedProjects  Project[]
-  subscriptions      Subscription[]
+  id                    String                 @id @default(uuid())
+  address               String                 @unique
+  email                 String?
+  emailVerified         Boolean                @default(false)
+  receiveEmails         Boolean                @default(false)
+  name                  String?
+  bio                   String?
+  joinedAt              DateTime
+  role                  UserRole               @default(USER)
+  socials               Socials                @relation(fields: [socialsId], references: [id])
+  posts                 ProjectPost[]
+  projectAuthorships    ProjectAuthorships[]
+  projectRequests       ProjectRequest[]
+  socialsId             String
+  favoritedProjects     Project[]
+  subscriptions         Subscription[]
+  EmailVerificationCode EmailVerificationCode?
 }
 
 enum ProjectAuthorRole {
@@ -129,6 +141,7 @@ model ProjectRequest {
 
 enum SubscriptionType {
   PUSH_NOTIFICATION
+  EMAIL
 }
 
 model Subscription {

@@ -24,7 +24,11 @@ export default async function SubscriptionsPage() {
   return (
     <div className='flex flex-col gap-y-7'>
       <PageTitle>{metadata.title}</PageTitle>
-      <SubscriptionList subscriptions={subscriptions} />
+      <SubscriptionList
+        subscriptions={subscriptions}
+        hasVerifiedEmail={user.emailVerified}
+        receiveEmails={user.receiveEmails}
+      />
     </div>
   )
 }

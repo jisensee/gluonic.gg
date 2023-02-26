@@ -6,11 +6,12 @@ import multer from 'multer'
 import { prisma } from '@/server/db/client'
 import { AuthService } from '@/server/auth-service'
 import { canUserManageProject } from '@/server/server-utils'
+import { env } from '@/env.mjs'
 
-const s3AccessKey = process.env.S3_ACCESS_KEY ?? ''
-const s3SecretKey = process.env.S3_SECRET_KEY ?? ''
-const s3Endpoint = process.env.S3_ENDPOINT ?? ''
-const s3Bucket = process.env.S3_BUCKET ?? ''
+const s3AccessKey = env.S3_ACCESS_KEY ?? ''
+const s3SecretKey = env.S3_SECRET_KEY ?? ''
+const s3Endpoint = env.S3_ENDPOINT ?? ''
+const s3Bucket = env.S3_BUCKET ?? ''
 
 const s3 = new aws.S3({
   credentials: { accessKeyId: s3AccessKey, secretAccessKey: s3SecretKey },

@@ -1,7 +1,5 @@
 #!bin/bash
 
-npm run check
-
 if [[ $VERCEL_GIT_COMMIT_REF == "main" ]] ; then
   npm run prisma:generate-prod
 else

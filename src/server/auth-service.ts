@@ -3,6 +3,7 @@ import { getToken } from 'next-auth/jwt'
 import { SiweMessage } from 'siwe'
 import { getCsrfToken } from 'next-auth/react'
 import { UserService } from './user-service'
+import { env } from '@/env.mjs'
 
 const findUserFromRequest = (req: NextApiRequest) =>
   getToken({ req }).then((token) =>
@@ -10,11 +11,11 @@ const findUserFromRequest = (req: NextApiRequest) =>
   )
 
 const buildNextAuthUrl = () => {
-  if (process.env.NEXTAUTH_URL) {
-    return process.env.NEXTAUTH_URL
+  if (env.VERCEL_URL) {
+    return `https://${env.VERCEL_URL}`
   }
-  if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}`
+  if (env.NEXTAUTH_URL) {
+    return env.NEXTAUTH_URL
   }
   return null
 }
@@ -24,12 +25,12 @@ const signInUser = async (
   signature: string,
   req: NextApiRequest
 ) => {
+  const nextAuthUrl = buildNextAuthUrl()
+  if (!nextAuthUrl) {
+    return
+  }
   try {
     const siwe = new SiweMessage(JSON.parse(message ?? '{}'))
-    const nextAuthUrl = buildNextAuthUrl()
-    if (!nextAuthUrl) {
-      return
-    }
 
     const result = await siwe.verify({
       signature,
@@ -43,7 +44,15 @@ const signInUser = async (
     console.log('Sign in with Ethereum failed', result.error)
     return
   } catch (e) {
-    console.error('Auth error', e)
+    console.error(
+      'Auth error',
+      {
+        url: nextAuthUrl,
+        vercelUrl: env.VERCEL_URL,
+        nextAuthUrl: env.NEXTAUTH_URL,
+      },
+      e
+    )
     return null
   }
 }

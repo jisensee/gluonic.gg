@@ -1,7 +1,7 @@
-import { cache } from 'react'
 import { prisma } from '@/server/db/client'
 
-export const getProject = cache((gameKey: string, projectKey: string) =>
+// export const getProject = cache((gameKey: string, projectKey: string) =>
+export const getProject = (gameKey: string, projectKey: string) =>
   prisma.project.findFirst({
     where: { key: projectKey, game: { key: gameKey } },
     include: {
@@ -12,7 +12,6 @@ export const getProject = cache((gameKey: string, projectKey: string) =>
       projectAuthorships: { include: { user: true } },
     },
   })
-)
 
 export type Params = {
   game: string

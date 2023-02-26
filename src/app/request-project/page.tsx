@@ -1,4 +1,5 @@
 import { ProjectRequestForm } from './form'
+import { EmailMessage } from './email-message'
 import { prisma } from '@/server/db/client'
 import { getUser } from '@/server/server-utils'
 import { PageTitle } from '@/components/common/page-title'
@@ -13,6 +14,7 @@ export default async function RequestProjectPage() {
   if (!user) {
     return <div>Please sign in to request a new project.</div>
   }
+  const canReceiveEmail = !!user.email && user.emailVerified
 
   const games = await prisma.game.findMany()
 
@@ -27,6 +29,7 @@ export default async function RequestProjectPage() {
             Please enter your project details here. After submitting, the
             project will be checked by an admin and either accepted or rejected.
           </p>
+          <EmailMessage canReceiveEmail={canReceiveEmail} userId={user.id} />
           <ProjectRequestForm games={games} />
         </div>
       )}

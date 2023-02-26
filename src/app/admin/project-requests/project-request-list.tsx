@@ -48,7 +48,7 @@ export const ProjectRequestList: FC<ProjectListProps> = ({
       }
     )
   return (
-    <div>
+    <div className='flex flex-col gap-y-3'>
       {requests.map((request) => (
         <ProjectCard
           key={request.id}

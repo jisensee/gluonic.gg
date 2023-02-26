@@ -1,6 +1,5 @@
 import type { Metadata } from 'next/types'
 import { faEdit } from '@fortawesome/free-solid-svg-icons'
-import Head from 'next/head'
 import { notFound } from 'next/navigation'
 import { UserProjects } from './user-projects'
 import { prisma } from '@/server/db/client'
@@ -59,9 +58,6 @@ export default async function UserPage({ params }: { params: Params }) {
 
   return (
     <div className='flex flex-col gap-y-3'>
-      <Head>
-        <title>{Format.username(user.name)}</title>
-      </Head>
       <PageTitle
         rightElement={
           sameUser && (
@@ -88,6 +84,7 @@ export default async function UserPage({ params }: { params: Params }) {
       <UserProjects
         projects={projects}
         favoritedProjectIds={favoritedProjectIds}
+        data-superjson
       />
     </div>
   )

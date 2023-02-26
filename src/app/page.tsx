@@ -2,8 +2,11 @@ import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 import { prisma } from '@/server/db/client'
 import { GameProjectCard } from '@/components/game-project-card'
 import { Link } from '@/components/link'
+import { getUser } from '@/server/server-utils'
 
 export default async function HomePage() {
+  const user = await getUser()
+
   const games = await prisma.game.findMany({
     include: {
       socials: true,
@@ -12,10 +15,18 @@ export default async function HomePage() {
           projects: {
             where: { published: true },
           },
+          subscriptions: true,
         },
       },
     },
   })
+
+  const subscribedGames = user
+    ? await prisma.subscription.findMany({
+        where: { userId: user.id, gameId: { not: null } },
+      })
+    : []
+
   return (
     <div className='flex flex-col gap-y-5'>
       <div className='flex flex-col gap-y-3 text-center'>
@@ -41,6 +52,14 @@ export default async function HomePage() {
           logoUrl={game.logoUrl}
           website={game.website}
           socials={game.socials}
+          subscribersProps={{
+            loggedIn: !!user,
+            hasVerifiedEmail: user?.emailVerified,
+            receiveEmails: user?.receiveEmails,
+            game,
+            subscriberCount: game._count.subscriptions,
+            subscription: subscribedGames.find((s) => s.gameId === game.id),
+          }}
         />
       ))}
     </div>
