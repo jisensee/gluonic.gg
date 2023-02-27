@@ -16,12 +16,41 @@ export const metadata: Metadata = {
     template: '%s | Gluonic',
     default: 'Gluonic',
   },
+  manifest: '/manifest.json',
+  icons: [
+    {
+      rel: 'icon',
+      url: '/favicon-16x16.png',
+      sizes: '16x16',
+      type: 'image/png',
+    },
+    {
+      rel: 'icon',
+      url: '/favicon-32x32.png',
+      sizes: '32x32',
+      type: 'image/png',
+    },
+    {
+      rel: 'apple-touch-icon',
+      url: '/apple-touch-icon.png',
+      sizes: '180x180',
+    },
+    {
+      rel: 'mask-icon',
+      url: '/safari-pinned-tab.svg',
+    },
+  ],
+  themeColor: '#dca54c',
 }
 
 export default async function RootLayout({ children }: PropsWithChildren) {
   const user = await getUser()
   return (
     <html lang='en'>
+      <head>
+        <link rel='mask-icon' href='/safari-pinned-tab.svg' color='#dca54c' />
+        <meta name='msapplication-TileColor' content='#dca54c' />
+      </head>
       <body>
         <Providers>
           {user && <NotificationManager />}
