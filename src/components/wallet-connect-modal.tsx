@@ -1,4 +1,5 @@
 import { faClose, faGlobe } from '@fortawesome/free-solid-svg-icons'
+import { WalletConnectLegacyConnector } from 'wagmi/connectors/walletConnectLegacy'
 import Image from 'next/image'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { FC, PropsWithChildren, ReactNode } from 'react'
@@ -33,6 +34,59 @@ const ConnectButton: FC<ConnectButtonProps> = ({
   </Button>
 )
 
+type ListConnector = {
+  name: string
+  logoUrl?: string
+  logoComp?: ReactNode
+  connector: Connector
+}
+
+const connectors: ListConnector[] = [
+  {
+    name: 'Wallet Connect v1',
+    logoUrl: '/wallet-connect-logo.svg',
+    connector: new WalletConnectLegacyConnector({
+      chains: [mainnet],
+      options: {
+        qrcode: true,
+      },
+    }),
+  },
+  {
+    name: 'Metamask',
+    logoUrl: '/metamask-logo.svg',
+    connector: new MetaMaskConnector({ chains: [mainnet] }),
+  },
+  {
+    name: 'Browser Wallet',
+    logoComp: <FontAwesomeIcon icon={faGlobe} />,
+    connector: new InjectedConnector({ chains: [mainnet] }),
+  },
+  {
+    name: 'Wallet Connect v2 (experimental)',
+    logoUrl: '/wallet-connect-logo.svg',
+    connector: new WalletConnectConnector({
+      chains: [mainnet],
+      options: {
+        projectId: env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID ?? '',
+        metadata: {
+          name: 'Gluonic.gg',
+          description: 'Gluonic.gg',
+          url: 'https://gluonic.gg',
+          icons: ['https://gluonic.gg/android-chrome-512x512.png'],
+        },
+        showQrModal: true,
+        qrModalOptions: {
+          themeMode: 'dark',
+          themeVariables: {
+            '--w3m-z-index': '9999',
+          },
+        },
+      },
+    }),
+  },
+]
+
 export type WalletConnectModalProps = {
   open: boolean
   onClose: () => void
@@ -49,16 +103,12 @@ export const WalletConnectModal: FC<WalletConnectModalProps> = ({
   onConnect,
 }) => {
   const { isConnecting } = useAccount()
-  const { connectAsync } = useConnect()
+  const { connectAsync } = useConnect({ chainId: mainnet.id })
   const { showToast } = useToast()
 
   const connect = (connector: Connector) =>
-    connectAsync({ connector })
-      .then((r) => {
-        if (onConnect) {
-          onConnect(r.account)
-        }
-      })
+    connectAsync({ connector, chainId: mainnet.id })
+      .then((r) => onConnect?.(r.account))
       .catch(() =>
         showToast({
           status: 'error',
@@ -82,49 +132,24 @@ export const WalletConnectModal: FC<WalletConnectModalProps> = ({
       </Modal.Header>
       <Modal.Body className='flex flex-col gap-y-3'>
         {topText}
-        <ConnectButton
-          icon={
-            <div className='relative h-8 w-8'>
-              <Image
-                src='/wallet-connect-logo.svg'
-                alt='wallet connect logo'
-                fill
-              />
-            </div>
-          }
-          isConnecting={isConnecting}
-          onClick={() =>
-            connect(
-              new WalletConnectConnector({
-                chains: [mainnet],
-                options: {
-                  projectId: env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID ?? '',
-                  showQrModal: true,
-                },
-              })
-            )
-          }
-        >
-          Wallet Connect
-        </ConnectButton>
-        <ConnectButton
-          icon={
-            <div className='relative h-8 w-8'>
-              <Image src='/metamask-logo.svg' alt='metamask logo' fill />
-            </div>
-          }
-          isConnecting={isConnecting}
-          onClick={() => connect(new MetaMaskConnector({ chains: [mainnet] }))}
-        >
-          MetaMask
-        </ConnectButton>
-        <ConnectButton
-          icon={<FontAwesomeIcon icon={faGlobe} />}
-          isConnecting={isConnecting}
-          onClick={() => connect(new InjectedConnector())}
-        >
-          Browser Wallet
-        </ConnectButton>
+        {connectors.map(({ name, logoUrl, logoComp, connector }) => (
+          <ConnectButton
+            key={name}
+            icon={
+              logoUrl ? (
+                <div className='relative h-8 w-8'>
+                  <Image src={logoUrl} alt={`${name} logo`} fill />
+                </div>
+              ) : (
+                logoComp
+              )
+            }
+            isConnecting={isConnecting}
+            onClick={() => connect(connector)}
+          >
+            {name}
+          </ConnectButton>
+        ))}
         {bottomText}
       </Modal.Body>
     </Modal>

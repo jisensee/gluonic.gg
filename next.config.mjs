@@ -24,6 +24,7 @@ const config = {
       '*': ['**swc/core**'],
     },
   },
+  productionBrowserSourceMaps: true,
   images: {
     // @ts-ignore
     remotePatterns: [
