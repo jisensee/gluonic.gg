@@ -11,11 +11,11 @@ const findUserFromRequest = (req: NextApiRequest) =>
   )
 
 const buildNextAuthUrl = () => {
-  if (env.VERCEL_URL) {
-    return `https://${env.VERCEL_URL}`
-  }
   if (env.NEXTAUTH_URL) {
     return env.NEXTAUTH_URL
+  }
+  if (env.VERCEL_URL) {
+    return `https://${env.VERCEL_URL}`
   }
   return null
 }
