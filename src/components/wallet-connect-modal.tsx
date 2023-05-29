@@ -41,7 +41,7 @@ type ListConnector = {
   connector: Connector
 }
 
-const connectors: ListConnector[] = [
+const connectors = (): ListConnector[] => [
   {
     name: 'Wallet Connect v1',
     logoUrl: '/wallet-connect-logo.svg',
@@ -132,7 +132,7 @@ export const WalletConnectModal: FC<WalletConnectModalProps> = ({
       </Modal.Header>
       <Modal.Body className='flex flex-col gap-y-3'>
         {topText}
-        {connectors.map(({ name, logoUrl, logoComp, connector }) => (
+        {connectors().map(({ name, logoUrl, logoComp, connector }) => (
           <ConnectButton
             key={name}
             icon={

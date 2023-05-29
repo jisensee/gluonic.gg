@@ -31,8 +31,10 @@ export const usePushNotification = (): SendNotification | undefined => {
   const [reg, setReg] = useState<ServiceWorkerRegistration>()
 
   useEffect(() => {
-    navigator.serviceWorker.getRegistration().then(setReg)
-    requestNotificationPermission().then(setGranted)
+    if (navigator.serviceWorker) {
+      navigator.serviceWorker.getRegistration().then(setReg)
+      requestNotificationPermission().then(setGranted)
+    }
   }, [])
 
   const sendNotification = useCallback(
