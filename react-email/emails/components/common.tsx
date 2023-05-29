@@ -26,9 +26,15 @@ export const Link: FC<ComponentProps<typeof ELink>> = ({
   />
 )
 
-export const buildUrl = (path: string) => {
-  const base = process.env.VERCEL_URL
-    ? `https://${process.env.VERCEL_URL}`
-    : 'http://localhost:3000'
-  return `${base}${path}`
+const baseUrl = () => {
+  const nextAuthUrl = process.env.NEXTAUTH_URL
+  const vercelUrl = process.env.VERCEL_URL
+  if (nextAuthUrl) {
+    return nextAuthUrl
+  } else if (vercelUrl) {
+    return `https://${vercelUrl}`
+  }
+  return 'localhost:3000'
 }
+
+export const buildUrl = (path: string) => `${baseUrl()}${path}`
