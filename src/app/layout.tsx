@@ -6,9 +6,9 @@ import { Header } from './header'
 import { Footer } from './footer'
 import { Providers } from '@/providers'
 import { getUser } from '@/server/server-utils'
-import { NotificationManager } from '@/components/notification-manager'
 
 import '../styles/global.css'
+import { NotificationManager } from '@/components/notification-manager'
 
 config.autoAddCss = false
 

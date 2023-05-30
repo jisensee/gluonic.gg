@@ -3,7 +3,7 @@
 import { Game, Project, Socials, Subscription } from '@prisma/client'
 import { FC } from 'react'
 import { useFavoriteProjectsList } from '@/hooks/favorite-hooks'
-import { ProjectCard } from '@/components/game-project-card'
+import { ProjectCard } from '@/components/project-card'
 
 type ProjectsProps = {
   game: Game

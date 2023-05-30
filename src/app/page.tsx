@@ -1,8 +1,7 @@
-import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 import { prisma } from '@/server/db/client'
-import { GameProjectCard } from '@/components/game-project-card'
 import { Link } from '@/components/link'
 import { getUser } from '@/server/server-utils'
+import { GameCard } from '@/components/game-card'
 
 export default async function HomePage() {
   const user = await getUser()
@@ -42,25 +41,23 @@ export default async function HomePage() {
         </Link>
       </div>
       {games.map((game) => (
-        <GameProjectCard
-          key={game.key}
-          detailLink={`/${game.key}`}
-          detailText={`Discover ${game._count.projects} projects`}
-          detailIcon={faMagnifyingGlass}
-          title={game.name}
-          abstract={game.description}
-          logoUrl={game.logoUrl}
-          website={game.website}
-          socials={game.socials}
-          subscribersProps={{
-            loggedIn: !!user,
-            hasVerifiedEmail: user?.emailVerified,
-            receiveEmails: user?.receiveEmails,
-            game,
-            subscriberCount: game._count.subscriptions,
-            subscription: subscribedGames.find((s) => s.gameId === game.id),
-          }}
-        />
+        <>
+          <GameCard
+            key={game.key}
+            game={game}
+            socials={game.socials}
+            projectCount={game._count.projects}
+            subscribersProps={{
+              loggedIn: !!user,
+              hasVerifiedEmail: user?.emailVerified,
+              receiveEmails: user?.receiveEmails,
+              game,
+              subscriberCount: game._count.subscriptions,
+              subscription: subscribedGames.find((s) => s.gameId === game.id),
+            }}
+            data-superjson
+          />
+        </>
       ))}
     </div>
   )

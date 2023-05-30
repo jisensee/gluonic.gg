@@ -60,6 +60,7 @@
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.44.2",
     "react-markdown": "^8.0.7",
+    "sharp": "^0.32.1",
     "siwe": "^2.1.4",
     "superjson": "1.12",
     "viem": "^0.3.37",

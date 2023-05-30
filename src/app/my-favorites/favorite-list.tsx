@@ -1,8 +1,8 @@
 'use client'
 
 import { Game, Project, Socials } from '@prisma/client'
-import { ProjectCard } from '@/components/game-project-card'
 import { useFavoriteProjectsList } from '@/hooks/favorite-hooks'
+import { ProjectCard } from '@/components/project-card'
 
 type FavoriteListProps = {
   projects: (Project & {

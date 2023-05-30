@@ -78,22 +78,21 @@ export default async function GamePage(p: P) {
       })
     : []
 
-  return (
-    <>
-      <div className='flex flex-col gap-y-3'>
-        <div className='flex flex-row flex-wrap items-center justify-center gap-x-8 gap-y-2 rounded-2xl bg-base-200 px-5 py-3 sm:justify-start'>
-          <div className='mr-auto flex flex-row items-center gap-x-3'>
-            <div className='relative h-12 w-12'>
-              <Image
-                className='object-contain'
-                src={game.logoUrl}
-                alt={`${game.name} logo`}
-                fill
-              />
-            </div>
-            <h1>{game.name}</h1>
-          </div>
+  const gameHeader = (
+    <div className='flex flex-col gap-y-3 rounded-2xl bg-base-200 px-5 py-3 '>
+      <div className='flex flex-row items-center gap-x-5'>
+        <div className='relative h-12 w-12'>
+          <Image
+            className='object-contain'
+            src={game.logoUrl}
+            alt={`${game.name} logo`}
+            fill
+          />
+        </div>
+        <h1 className='grow'>{game.name}</h1>
+        <div className='hidden flex-row gap-x-5 sm:flex'>
           <LinkButton
+            className='hidden md:flex'
             href={game.website}
             icon={faGlobe}
             button={{ color: 'secondary' }}
@@ -102,24 +101,48 @@ export default async function GamePage(p: P) {
             Website
           </LinkButton>
           <SocialLinks
-            className='flex flex-row items-center gap-x-3 text-4xl md:hidden'
+            className='hidden flex-row items-center gap-x-5 text-3xl sm:flex lg:hidden'
             socials={game.socials}
             compact
           />
           <SocialLinks
-            className='hidden flex-row items-center gap-x-3 text-4xl md:flex'
+            className='hidden flex-row items-center gap-x-5 text-3xl lg:flex'
             socials={game.socials}
           />
-          <Subscribers
-            game={game}
-            subscription={gameSubscription ?? undefined}
-            subscriberCount={game._count.subscriptions}
-            hasVerifiedEmail={user?.emailVerified}
-            receiveEmails={user?.receiveEmails}
-            loggedIn={!!user}
-            data-superjson
-          />
         </div>
+        <Subscribers
+          game={game}
+          subscription={gameSubscription ?? undefined}
+          subscriberCount={game._count.subscriptions}
+          hasVerifiedEmail={user?.emailVerified}
+          receiveEmails={user?.receiveEmails}
+          loggedIn={!!user}
+          data-superjson
+        />
+      </div>
+      <div className='flex flex-col items-center gap-y-3'>
+        <LinkButton
+          className='flex md:hidden'
+          href={game.website}
+          icon={faGlobe}
+          button={{ color: 'secondary' }}
+          external
+        >
+          Website
+        </LinkButton>
+        <SocialLinks
+          className='flex flex-row items-center gap-x-3 text-3xl sm:hidden'
+          socials={game.socials}
+          compact
+        />
+      </div>
+    </div>
+  )
+
+  return (
+    <>
+      <div className='flex flex-col gap-y-3'>
+        {gameHeader}
         <Projects
           projects={game.projects}
           game={game}
