@@ -9,13 +9,18 @@ import { postDataInput } from '@/utils/trpc-inputs'
 import { PostForm } from '@/components/post-form'
 import { mutationToToastStatus, useStatusToast } from '@/context/toast-context'
 
-type NewPostFormProps = { projectId: string; projectUrl: string }
+type NewPostFormProps = {
+  projectId: string
+  projectUrl: string
+  subscriberCount: number
+}
 
 type FormData = z.infer<typeof postDataInput>
 
 export const NewPostForm: FC<NewPostFormProps> = ({
   projectId,
   projectUrl,
+  subscriberCount,
 }: NewPostFormProps) => {
   const { mutateAsync, isLoading, status, error } =
     trpc.post.create.useMutation()
@@ -39,6 +44,14 @@ export const NewPostForm: FC<NewPostFormProps> = ({
     }).then((created) => push(`${projectUrl}/posts/${created.id}` as Route))
 
   return (
-    <PostForm onSubmit={onSubmit} isLoading={isLoading} saveText='Publish' />
+    <PostForm
+      onSubmit={onSubmit}
+      isLoading={isLoading}
+      saveText={
+        subscriberCount > 0
+          ? `Publish to ${subscriberCount} subscribers`
+          : 'Publish'
+      }
+    />
   )
 }
