@@ -44,8 +44,8 @@ const sendEmails = async (emails: EmailMessage[]) => {
         ]
       })
   )
-  const time = Date.now() - start
-  logger.info(`Sent ${emails.length} is ${time}ms`)
+  const timeMs = Date.now() - start
+  logger.info(`successfully sent ${emails.length} emails`, { timeMs })
 }
 
 const startEmailVerification = async (user: User, email: string) => {

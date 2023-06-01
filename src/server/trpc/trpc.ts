@@ -37,13 +37,13 @@ const loggerMiddleware = t.middleware(async (opts) => {
   const start = Date.now()
   const result = await opts.next(opts)
 
-  getLogger('trpc').info({
-    user: opts.ctx.user?.id,
+  getLogger('trpc').info('processed trpc request', {
+    userId: opts.ctx.user?.id,
     path: opts.path,
-    input: opts.rawInput,
     type: opts.type,
-    time: Date.now() - start,
+    timeMs: Date.now() - start,
     ok: result.ok,
+    input: opts.rawInput,
   })
 
   return result

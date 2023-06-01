@@ -1,17 +1,5 @@
-import { pino } from 'pino'
-import { env } from '@/env.mjs'
+import { log } from 'next-axiom'
 
-export const getLogger = (name: string) =>
-  pino({
-    name,
-    level: env.NODE_ENV === 'development' ? 'debug' : 'info',
-    transport:
-      env.NODE_ENV === 'development'
-        ? {
-            target: 'pino-pretty',
-            options: {
-              colorize: true,
-            },
-          }
-        : undefined,
-  })
+export const getLogger = (context: string) => {
+  return log.with({ context })
+}

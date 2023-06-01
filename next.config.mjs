@@ -7,6 +7,7 @@
 !process.env.SKIP_ENV_VALIDATION && (await import('./src/env.mjs'))
 
 import nextPwa from '@ducanh2912/next-pwa'
+import { withAxiom } from 'next-axiom'
 import { env } from './src/env.mjs'
 
 const withPwa = nextPwa({
@@ -64,6 +65,5 @@ const config = {
     return config
   },
 }
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-export default withPwa(config)
+
+export default withAxiom(withPwa(config))
