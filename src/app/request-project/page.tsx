@@ -21,18 +21,14 @@ export default async function RequestProjectPage() {
   return (
     <div className='flex flex-col gap-y-3'>
       <PageTitle>{metadata.title}</PageTitle>
-      {games === undefined ? (
-        <p className='text-xl'>Please sign in to request a new project</p>
-      ) : (
-        <div className='flex flex-col gap-y-3'>
-          <p>
-            Please enter your project details here. After submitting, the
-            project will be checked by an admin and either accepted or rejected.
-          </p>
-          <EmailMessage canReceiveEmail={canReceiveEmail} userId={user.id} />
-          <ProjectRequestForm games={games} />
-        </div>
-      )}
+      <div className='flex flex-col gap-y-3'>
+        <p>
+          Please enter your project details here. After submitting, the project
+          will be checked by an admin and either accepted or rejected.
+        </p>
+        <EmailMessage canReceiveEmail={canReceiveEmail} userId={user.id} />
+        <ProjectRequestForm games={games} />
+      </div>
     </div>
   )
 }

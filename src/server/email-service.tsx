@@ -4,8 +4,11 @@ import { ServerClient } from 'postmark'
 import { render } from '@react-email/render'
 import { User } from '@prisma/client'
 import VerifyEmail from '../../react-email/emails/verify-email'
+import { getLogger } from './logger'
 import { prisma } from '@/server/db/client'
 import { env } from '@/env.mjs'
+
+const logger = getLogger('EmailService')
 
 const canUserReceiveEmails = (user: User | string) =>
   typeof user === 'string'
@@ -18,7 +21,9 @@ export type EmailMessage = {
   subject: string
 }
 const sendEmails = async (emails: EmailMessage[]) => {
-  const client = new ServerClient(env.POSTMARK_API_KEY ?? '')
+  const client = new ServerClient(env.POSTMARK_API_KEY)
+
+  const start = Date.now()
 
   await client.sendEmailBatch(
     emails
@@ -39,6 +44,8 @@ const sendEmails = async (emails: EmailMessage[]) => {
         ]
       })
   )
+  const time = Date.now() - start
+  logger.info(`Sent ${emails.length} is ${time}ms`)
 }
 
 const startEmailVerification = async (user: User, email: string) => {
