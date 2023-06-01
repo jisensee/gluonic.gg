@@ -9,7 +9,7 @@ export const ProjectInputs = {
 }
 
 export const socialsInput = z.object({
-  website: websiteInput.nullish(),
+  website: websiteInput.nullish().or(z.literal('')),
   twitter: z.string().max(80).nullish(),
   github: z.string().max(80).nullish(),
   discord: z.string().max(80).nullish(),
