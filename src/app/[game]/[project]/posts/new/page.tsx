@@ -22,7 +22,14 @@ const NewPostPage: NextPage<Params> = async ({ params }) => {
 
   const project = await prisma.project.findFirst({
     where: { key: params.project, game: { key: params.game } },
-    include: { game: true },
+    include: {
+      game: true,
+      _count: {
+        select: {
+          subscriptions: true,
+        },
+      },
+    },
   })
   if (!project) {
     notFound()
@@ -33,7 +40,11 @@ const NewPostPage: NextPage<Params> = async ({ params }) => {
   return (
     <>
       <h1>Write new post for {project.name}</h1>
-      <NewPostForm projectUrl={projectUrl} projectId={project.id} />
+      <NewPostForm
+        projectUrl={projectUrl}
+        projectId={project.id}
+        subscriberCount={project._count.subscriptions}
+      />
     </>
   )
 }

@@ -42,9 +42,9 @@ export const PostForm: FC<PostFormProps> = ({
         <Input {...register('title')} color={errorColor(errors.title)} />
       </FormField>
       <FormField
-        label='Abstract'
+        label={'Abstract'}
         error={errors.abstract}
-        infoMessage='This will be shown in bold before the actual post content.'
+        infoMessage='This will be shown in bold before the actual post content. This is fully optional.'
       >
         <Textarea
           {...register('abstract')}
