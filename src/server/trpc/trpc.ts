@@ -1,6 +1,7 @@
 import { initTRPC, TRPCError } from '@trpc/server'
 import superjson from 'superjson'
 
+import { getLogger } from '../logger'
 import { type Context } from './context'
 
 const t = initTRPC.context<Context>().create({
@@ -32,10 +33,28 @@ const isAuthed = t.middleware(({ ctx, next }) => {
   })
 })
 
+const loggerMiddleware = t.middleware(async (opts) => {
+  const start = Date.now()
+  const result = await opts.next(opts)
+
+  getLogger('trpc').info({
+    user: opts.ctx.user?.id,
+    path: opts.path,
+    input: opts.rawInput,
+    type: opts.type,
+    time: Date.now() - start,
+    ok: result.ok,
+  })
+
+  return result
+})
+
 /**
  * Procedure that ensures user is logged in
  **/
-export const protectedProcedure = t.procedure.use(isAuthed)
+export const protectedProcedure = t.procedure
+  .use(loggerMiddleware)
+  .use(isAuthed)
 
 /**
  * Procedure that ensures the user is an admin
