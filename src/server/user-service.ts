@@ -1,4 +1,5 @@
 import { User } from '@prisma/client'
+import { getLogger } from './logger'
 import { prisma } from '@/server/db/client'
 
 const findById = (id: string) => prisma.user.findUnique({ where: { id } })
@@ -6,13 +7,17 @@ const findById = (id: string) => prisma.user.findUnique({ where: { id } })
 const findOrCreate = async (address: string) => {
   const user = await prisma.user.findUnique({ where: { address } })
   if (!user) {
-    return prisma.user.create({
+    const newUser = prisma.user.create({
       data: {
         address,
         joinedAt: new Date(),
         socials: { create: {} },
       },
     })
+    getLogger('UserService').info('Created new user', {
+      type: 'userCreated',
+    })
+    return newUser
   }
   return user
 }

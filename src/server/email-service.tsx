@@ -45,7 +45,11 @@ const sendEmails = async (emails: EmailMessage[]) => {
       })
   )
   const timeMs = Date.now() - start
-  logger.info(`successfully sent ${emails.length} emails`, { timeMs })
+  logger.info(`successfully sent emails`, {
+    timeMs,
+    type: 'batchEmailsSent',
+    emailCount: emails.length,
+  })
 }
 
 const startEmailVerification = async (user: User, email: string) => {
@@ -74,6 +78,11 @@ const startEmailVerification = async (user: User, email: string) => {
       subject: 'Verify your email',
     },
   ])
+  logger.info('email verification started', {
+    type: 'emailVerificationStarted',
+    userId: user.id,
+    email,
+  })
 
   return code
 }
@@ -103,6 +112,12 @@ const verifyEmail = async (
     },
   })
   await prisma.emailVerificationCode.delete({ where: { id: code } })
+
+  logger.info('email verification completed', {
+    type: 'emailVerificationCompleted',
+    userId,
+  })
+
   return 'success'
 }
 
