@@ -31,7 +31,15 @@ const config = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: `${env.S3_BUCKET}.${env.S3_ENDPOINT}`,
+        hostname: 'uploadthing.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'gluonic-test.eu-central-1.linodeobjects.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'gluonic.eu-central-1.linodeobjects.com',
       },
       {
         protocol: 'https',
