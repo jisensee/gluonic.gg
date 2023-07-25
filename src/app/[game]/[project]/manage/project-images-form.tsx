@@ -1,4 +1,5 @@
 import type { FC } from 'react'
+import { generateReactHelpers } from '@uploadthing/react/hooks'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { Button } from 'react-daisyui'
@@ -8,6 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUpload } from '@fortawesome/free-solid-svg-icons'
 import { useImageUpload } from '@/hooks/image-upload-hooks'
 import { useToast } from '@/context/toast-context'
+import { OurFileRouter } from '@/app/api/uploadthing/core'
 
 export type ProjectImagesFormData = {
   logoUrl?: string
@@ -23,6 +25,8 @@ export type ProjectImagesFormProps = {
   initialData: ProjectImagesFormData
 }
 
+const { useUploadThing } = generateReactHelpers<OurFileRouter>()
+
 export const ProjectImagesForm: FC<ProjectImagesFormProps> = ({
   className,
   projectId,
@@ -36,23 +40,24 @@ export const ProjectImagesForm: FC<ProjectImagesFormProps> = ({
 
   const [logoUrl, setLogoUrl] = useState(initialData.logoUrl)
 
-  const { mutate, isLoading, data, error } = useImageUpload()
   const { showToast } = useToast()
 
-  useEffect(() => {
-    if (error) {
-      showToast({ status: 'error', title: 'Logo upload failed!' })
-    } else if (data) {
-      showToast({ status: 'success', title: 'Logo has been updated!' })
-      setLogoUrl(data.url)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, error])
+  const { isUploading, startUpload } = useUploadThing('projectLogo', {
+    onClientUploadComplete: (res) => {
+      const newLogoUrl = res?.[0]?.fileUrl
+      if (newLogoUrl) {
+        showToast({ status: 'success', title: 'Logo has been updated!' })
+        setLogoUrl(newLogoUrl)
+      }
+    },
+    onUploadError: () =>
+      showToast({ status: 'error', title: 'Logo upload failed!' }),
+  })
 
   const onSubmit = (data: FormState) => {
     const image = data.logo?.[0]
     if (image) {
-      mutate({ image, projectId })
+      startUpload([image], { projectId })
     }
   }
 
@@ -108,7 +113,7 @@ export const ProjectImagesForm: FC<ProjectImagesFormProps> = ({
         color='primary'
         type='submit'
         disabled={!isDirty || !isValid}
-        loading={isLoading}
+        loading={isUploading}
         startIcon={<FontAwesomeIcon icon={faUpload} />}
       >
         Upload
