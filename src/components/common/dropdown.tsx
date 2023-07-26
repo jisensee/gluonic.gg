@@ -21,7 +21,7 @@ export type DropdownProps = {
 export const Dropdown: FC<DropdownProps> = ({ toggle, items }) => (
   <DDropdown>
     <DDropdown.Toggle color='ghost'>{toggle}</DDropdown.Toggle>
-    <DDropdown.Menu className='right-0 w-fit whitespace-nowrap border border-primary bg-base-200'>
+    <DDropdown.Menu className='right-0 w-fit whitespace-nowrap border border-primary bg-base-200 z-50'>
       {items.map((item, key) => {
         if (item.hidden) {
           return null
@@ -34,7 +34,6 @@ export const Dropdown: FC<DropdownProps> = ({ toggle, items }) => (
         )
         return (
           <li
-            className=''
             key={key}
             onClick={() => {
               item.onClick?.()

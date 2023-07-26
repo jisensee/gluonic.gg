@@ -106,11 +106,7 @@ export const WalletConnectModal: FC<WalletConnectModalProps> = ({
       )
 
   return (
-    <Modal
-      className='border border-primary'
-      open={open}
-      onClickBackdrop={onClose}
-    >
+    <Modal className='border border-primary' open={open}>
       <Modal.Header className='flex flex-row items-center'>
         <span className='grow'>Connect your wallet</span>
         <FontAwesomeIcon
