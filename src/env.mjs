@@ -14,7 +14,7 @@ const server = z.object({
   NEXTAUTH_URL: z.string().nullish(),
   VERCEL_URL: z.string().nullish(),
   ABLY_PUBLISH_KEY: z.string(),
-  POSTMARK_API_KEY: z.string(),
+  RESEND_API_KEY: z.string(),
 })
 
 /**
@@ -40,7 +40,7 @@ const processEnv = {
   NEXTAUTH_URL: process.env.NEXTAUTH_URL,
   VERCEL_URL: process.env.VERCEL_URL,
   ABLY_PUBLISH_KEY: process.env.ABLY_PUBLISH_KEY,
-  POSTMARK_API_KEY: process.env.POSTMARK_API_KEY,
+  RESEND_API_KEY: process.env.RESEND_API_KEY,
   NEXT_PUBLIC_ABLY_SUBSCRIBE_KEY: process.env.NEXT_PUBLIC_ABLY_SUBSCRIBE_KEY,
   NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID:
     process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID,
