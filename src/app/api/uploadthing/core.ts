@@ -1,11 +1,11 @@
 import { createUploadthing, type FileRouter } from 'uploadthing/next'
-import { prisma } from '@/server/db/client'
-import { AuthService } from '@/server/auth-service'
 import { NextApiRequest } from 'next'
 import { z } from 'zod'
+import { utapi } from 'uploadthing/server'
+import { prisma } from '@/server/db/client'
+import { AuthService } from '@/server/auth-service'
 import { canUserManageProject } from '@/server/server-utils'
 import { getLogger } from '@/server/logger'
-import { utapi } from 'uploadthing/server'
 
 const f = createUploadthing()
 

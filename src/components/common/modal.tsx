@@ -21,11 +21,7 @@ export const Modal: FC<ModalProps> = ({
   useEscapeKeyHandler(onClose)
 
   return (
-    <DaisyModal
-      className='border border-primary'
-      open={open}
-      onClickBackdrop={onClose}
-    >
+    <DaisyModal className='border border-primary' open={open}>
       <DaisyModal.Header className='flex flex-row items-center'>
         <span className='grow'>{title}</span>
         <FontAwesomeIcon
