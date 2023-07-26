@@ -1,14 +1,15 @@
 import { addDays, isBefore } from 'date-fns'
 import { ReactElement } from 'react'
-import { ServerClient } from 'postmark'
-import { render } from '@react-email/render'
 import { User } from '@prisma/client'
+import { Resend } from 'resend'
 import VerifyEmail from '../../react-email/emails/verify-email'
 import { getLogger } from './logger'
 import { prisma } from '@/server/db/client'
 import { env } from '@/env.mjs'
 
 const logger = getLogger('EmailService')
+
+const resend = new Resend(env.RESEND_API_KEY)
 
 const canUserReceiveEmails = (user: User | string) =>
   typeof user === 'string'
@@ -21,34 +22,34 @@ export type EmailMessage = {
   subject: string
 }
 const sendEmails = async (emails: EmailMessage[]) => {
-  const client = new ServerClient(env.POSTMARK_API_KEY)
-
   const start = Date.now()
 
-  await client.sendEmailBatch(
-    emails
-      .filter(({ recipient }) => canUserReceiveEmails(recipient))
-      .flatMap(({ email, recipient, subject }) => {
-        const address =
-          typeof recipient === 'string' ? recipient : recipient.email
-        if (!address) {
-          return []
-        }
-        return [
-          {
-            From: 'notifications@gluonic.gg',
-            To: address,
-            Subject: subject,
-            HtmlBody: render(email()),
-          },
-        ]
-      })
-  )
+  const sendEmailResults = (
+    await Promise.all(
+      emails
+        .filter(({ recipient }) => canUserReceiveEmails(recipient))
+        .map(async ({ email, recipient, subject }) => {
+          const address =
+            typeof recipient === 'string' ? recipient : recipient.email
+          if (!address) {
+            return Promise.resolve([])
+          }
+          const r = await resend.sendEmail({
+            subject,
+            from: 'notifications@gluonic.gg',
+            to: address,
+            react: email(),
+          })
+          return [r]
+        })
+    )
+  ).flat()
+
   const timeMs = Date.now() - start
   logger.info(`successfully sent emails`, {
     timeMs,
     type: 'batchEmailsSent',
-    emailCount: emails.length,
+    emailCount: sendEmailResults.length,
   })
 }
 
