@@ -1,5 +1,4 @@
 import { faClose, faGlobe } from '@fortawesome/free-solid-svg-icons'
-import { WalletConnectLegacyConnector } from 'wagmi/connectors/walletConnectLegacy'
 import Image from 'next/image'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { FC, PropsWithChildren, ReactNode } from 'react'
@@ -43,30 +42,10 @@ type ListConnector = {
 
 const connectors = (): ListConnector[] => [
   {
-    name: 'Wallet Connect v1',
-    logoUrl: '/wallet-connect-logo.svg',
-    connector: new WalletConnectLegacyConnector({
-      chains: [mainnet],
-      options: {
-        qrcode: true,
-      },
-    }),
-  },
-  {
-    name: 'Metamask',
-    logoUrl: '/metamask-logo.svg',
-    connector: new MetaMaskConnector({ chains: [mainnet] }),
-  },
-  {
-    name: 'Browser Wallet',
-    logoComp: <FontAwesomeIcon icon={faGlobe} />,
-    connector: new InjectedConnector({ chains: [mainnet] }),
-  },
-  {
-    name: 'Wallet Connect v2 (experimental)',
+    name: 'Wallet Connect',
     logoUrl: '/wallet-connect-logo.svg',
     connector: new WalletConnectConnector({
-      chains: [mainnet],
+      // chains: [mainnet],
       options: {
         projectId: env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID ?? '',
         metadata: {
@@ -79,11 +58,21 @@ const connectors = (): ListConnector[] => [
         qrModalOptions: {
           themeMode: 'dark',
           themeVariables: {
-            '--w3m-z-index': '9999',
+            '--wcm-z-index': '9999',
           },
         },
       },
     }),
+  },
+  {
+    name: 'Metamask',
+    logoUrl: '/metamask-logo.svg',
+    connector: new MetaMaskConnector({ chains: [mainnet] }),
+  },
+  {
+    name: 'Browser Wallet',
+    logoComp: <FontAwesomeIcon icon={faGlobe} />,
+    connector: new InjectedConnector({ chains: [mainnet] }),
   },
 ]
 

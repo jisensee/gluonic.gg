@@ -1,5 +1,5 @@
-import { isAddress } from '@ethersproject/address'
 import { TRPCError } from '@trpc/server'
+import { isAddress } from 'viem'
 import { adminProcedure, protectedProcedure, router } from '../trpc'
 import NewProjectEmail from '../../../../react-email/emails/new-project'
 import NewProjectRequestEmail from '../../../../react-email/emails/new-project-request'
