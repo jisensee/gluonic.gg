@@ -42,9 +42,6 @@ export const ourFileRouter = {
       return { projectId: project.id, previousLogoUrl: project.logoUrl }
     })
     .onUploadComplete(async ({ metadata, file }) => {
-      // This code RUNS ON YOUR SERVER after upload
-      console.log('file url', file.url)
-
       try {
         await prisma.project.update({
           where: { id: metadata.projectId },
