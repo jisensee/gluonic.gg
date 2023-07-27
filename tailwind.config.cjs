@@ -6,8 +6,8 @@ module.exports = {
   content: [
     './src/app/**/*.{ts,tsx}',
     './src/components/**/*.{ts,tsx}',
-    './node_modules/daisyui/dist/**/*.{js,css}',
-    './node_modules/react-daisyui/dist/**/*.{js,css,cjs}',
+    'node_modules/daisyui/dist/**/*.js',
+    'node_modules/react-daisyui/dist/**/*.js',
   ],
   theme: {
     screens: {

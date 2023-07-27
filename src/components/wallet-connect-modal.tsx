@@ -45,9 +45,8 @@ const connectors = (): ListConnector[] => [
     name: 'Wallet Connect',
     logoUrl: '/wallet-connect-logo.svg',
     connector: new WalletConnectConnector({
-      // chains: [mainnet],
       options: {
-        projectId: env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID ?? '',
+        projectId: env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID,
         metadata: {
           name: 'Gluonic.gg',
           description: 'Gluonic.gg',

@@ -44,17 +44,21 @@ export const ourFileRouter = {
     .onUploadComplete(async ({ metadata, file }) => {
       // This code RUNS ON YOUR SERVER after upload
       console.log('file url', file.url)
-      await prisma.project.update({
-        where: { id: metadata.projectId },
-        data: {
-          logoUrl: file.url,
-        },
-      })
-      logger.info('Uploaded new logo', {
-        type: 'logoUpload',
-        projectId: metadata.projectId,
-      })
 
+      try {
+        await prisma.project.update({
+          where: { id: metadata.projectId },
+          data: {
+            logoUrl: file.url,
+          },
+        })
+        logger.info('Uploaded new logo', {
+          type: 'logoUpload',
+          projectId: metadata.projectId,
+        })
+      } catch {
+        logger.error('Failed to upload new logo')
+      }
       if (metadata.previousLogoUrl) {
         const matches = /uploadthing\.com\/f\/(.*)/.exec(
           metadata.previousLogoUrl

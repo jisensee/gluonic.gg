@@ -84,19 +84,19 @@ export const ProjectImagesForm: FC<ProjectImagesFormProps> = ({
                   return fl?.length === 1 ? undefined : 'File is required'
                 },
                 correctType: (fl) => {
-                  return ['image/png'].includes(fl?.item(0)?.type ?? '')
+                  return fl?.item(0)?.type?.startsWith('image/') ?? true
                     ? undefined
-                    : 'Filetype is not supported'
+                    : 'Please select an image file'
                 },
                 maxSize: (fl) => {
                   const size = fl?.item(0)?.size
-                  return size && size > 3 * 1024 * 1024
-                    ? 'File needs to be 3MB or smaller'
+                  return size && size > 1 * 1024 * 1024
+                    ? 'File needs to be 1MB or smaller'
                     : undefined
                 },
               },
             })}
-            accept='.png'
+            accept='image/*'
           />
           {errors['logo']?.message && (
             <span className='text-error'>{errors['logo'].message}</span>

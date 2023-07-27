@@ -17,6 +17,8 @@ const withPwa = nextPwa({
 
 /** @type {import("next/types").NextConfig} */
 const config = {
+  transpilePackages: ['react-daisyui'],
+  reactStrictMode: true,
   experimental: {
     appDir: true,
     typedRoutes: true,
@@ -32,14 +34,6 @@ const config = {
       {
         protocol: 'https',
         hostname: 'uploadthing.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'gluonic-test.eu-central-1.linodeobjects.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'gluonic.eu-central-1.linodeobjects.com',
       },
       {
         protocol: 'https',

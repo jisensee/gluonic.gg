@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { Game, Socials } from '@prisma/client'
 import classNames from 'classnames'
 import { FC } from 'react'
-import { Button, Card } from 'react-daisyui'
+import { Card } from 'react-daisyui'
 import { faGlobe, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 import { Link } from './link'
 import { LinkButton } from './common/link-button'
@@ -79,7 +79,6 @@ export const GameCard: FC<GameCardProps> = ({
         >
           Visit website
         </LinkButton>
-        <Button color='secondary'>test</Button>
       </div>
       <SocialLinks
         className='flex flex-row items-center justify-center gap-x-5 text-3xl lg:hidden'
