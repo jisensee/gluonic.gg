@@ -2,6 +2,7 @@ import type { Metadata } from 'next/types'
 import { notFound } from 'next/navigation'
 import { faUser } from '@fortawesome/free-solid-svg-icons'
 import { UserDataForm } from './form'
+import { DeleteButton } from './delete-button'
 import { prisma } from '@/server/db/client'
 
 import { getUser } from '@/server/server-utils'
@@ -46,13 +47,16 @@ export default async function UserEditPage({ params }: { params: Params }) {
     <>
       <PageTitle
         rightElement={
-          <LinkButton
-            href='/profile'
-            icon={faUser}
-            button={{ color: 'primary' }}
-          >
-            View profile
-          </LinkButton>
+          <div className='flex flex-row gap-x-5'>
+            <DeleteButton />
+            <LinkButton
+              href='/profile'
+              icon={faUser}
+              button={{ color: 'primary' }}
+            >
+              View profile
+            </LinkButton>
+          </div>
         }
       >
         Edit profile data

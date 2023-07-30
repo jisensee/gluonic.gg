@@ -48,8 +48,8 @@ model Project {
 model ProjectPost {
   id          String   @id @default(uuid())
   project     Project  @relation(fields: [projectId], references: [id])
-  author      User     @relation(fields: [authorId], references: [id])
-  authorId    String
+  author      User?    @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  authorId    String?
   projectId   String
   title       String
   abstract    String
@@ -67,7 +67,7 @@ model EmailVerificationCode {
   id         String   @id @default(uuid())
   validUntil DateTime
   userId     String   @unique
-  user       User     @relation(fields: [userId], references: [id])
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model User {
@@ -80,7 +80,7 @@ model User {
   bio                   String?
   joinedAt              DateTime
   role                  UserRole               @default(USER)
-  socials               Socials                @relation(fields: [socialsId], references: [id])
+  socials               Socials                @relation(fields: [socialsId], references: [id], onDelete: Cascade)
   posts                 ProjectPost[]
   projectAuthorships    ProjectAuthorships[]
   projectRequests       ProjectRequest[]
@@ -96,8 +96,8 @@ enum ProjectAuthorRole {
 }
 
 model ProjectAuthorships {
-  user      User              @relation(fields: [userId], references: [id])
-  project   Project           @relation(fields: [projectId], references: [id])
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project   Project           @relation(fields: [projectId], references: [id], onDelete: Cascade)
   type      ProjectAuthorRole
   userId    String
   projectId String
@@ -132,7 +132,7 @@ model ProjectRequest {
   projectWebsite  String
   requestedAt     DateTime @default(now())
   rejected        Boolean  @default(false)
-  user            User     @relation(fields: [userId], references: [id])
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   game            Game     @relation(fields: [gameId], references: [id])
   userId          String
   gameId          String
@@ -145,7 +145,7 @@ enum SubscriptionType {
 
 model Subscription {
   id        String             @id @default(uuid())
-  user      User               @relation(fields: [userId], references: [id])
+  user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
   game      Game?              @relation(fields: [gameId], references: [id])
   gameId    String?

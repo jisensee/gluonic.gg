@@ -80,8 +80,8 @@ const ProjectPostPage: NextPage<Params> = async ({ params }) => {
           title: post.title,
           body: post.body,
         }}
-        authorId={post.authorId}
-        authorName={post.author.name ?? undefined}
+        authorId={post.authorId ?? undefined}
+        authorName={post.author?.name ?? undefined}
         postId={post.id}
         canManage={canManage}
         project={post.project}

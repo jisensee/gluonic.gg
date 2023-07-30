@@ -54,4 +54,8 @@ export const userRouter = router({
         emailVerificationStarted: verificationCode !== undefined,
       }
     }),
+
+  deleteOwn: protectedProcedure.mutation(({ ctx: { user, prisma } }) =>
+    prisma.user.delete({ where: { id: user.id } })
+  ),
 })

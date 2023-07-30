@@ -22,7 +22,7 @@ type MainPostProps = {
   canManage: boolean
   publishedAt: string
   postId: string
-  authorId: string
+  authorId?: string
   authorName?: string
   projectUrl: string
   project: Project & { game: Game }
@@ -100,7 +100,7 @@ export const MainPost: FC<MainPostProps> = ({
         <span className='italic'>
           Published at {new Date(publishedAt).toLocaleDateString()} by{' '}
         </span>
-        <UserLink id={authorId} name={authorName} />
+        {authorId && <UserLink id={authorId} name={authorName} />}
       </span>
       <PostDisplay
         title={post.title}
