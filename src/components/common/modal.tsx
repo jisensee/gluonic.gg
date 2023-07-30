@@ -44,12 +44,14 @@ type ConfirmModalProps = {
   onConfirm: () => void
   confirmLabel: ReactNode
   cancelLabel?: ReactNode
+  loading?: boolean
 } & Omit<ModalProps, 'actions'>
 
 export const ConfirmModal: FC<ConfirmModalProps> = ({
   onConfirm,
   confirmLabel,
   cancelLabel = 'Cancel',
+  loading,
   ...props
 }) => (
   <Modal
@@ -59,6 +61,7 @@ export const ConfirmModal: FC<ConfirmModalProps> = ({
         <Button onClick={props.onClose}>{cancelLabel}</Button>
         <Button
           color='error'
+          loading={loading}
           onClick={() => {
             props.onClose()
             onConfirm()
