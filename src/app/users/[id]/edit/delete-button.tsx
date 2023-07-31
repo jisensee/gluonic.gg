@@ -33,8 +33,8 @@ export const DeleteButton = () => {
     <>
       <ConfirmModal
         open={open}
-        onClose={mutate}
-        onConfirm={() => setOpen(false)}
+        onClose={() => setOpen(false)}
+        onConfirm={mutate}
         confirmLabel='Delete my account'
         cancelLabel='Cancel'
         title='Delete account'

@@ -63,7 +63,6 @@ export const ConfirmModal: FC<ConfirmModalProps> = ({
           color='error'
           loading={loading}
           onClick={() => {
-            props.onClose()
             onConfirm()
           }}
         >
