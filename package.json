@@ -20,7 +20,7 @@
     "build": "next build",
     "vercel-build": "npm run check && npm run prisma:generate-prod && npm run prisma:migrate-prod && next build",
     "prisma:migrate-prod": "DATABASE_URL=\"$MIGRATE_DATABASE_URL\" prisma migrate deploy",
-    "prisma:generate-prod": "prisma generate --data-proxy",
+    "prisma:generate-prod": "prisma generate",
     "prisma:generate-preview": "prisma generate"
   },
   "dependencies": {
