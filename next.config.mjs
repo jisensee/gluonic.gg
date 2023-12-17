@@ -37,6 +37,10 @@ const config = {
       },
       {
         protocol: 'https',
+        hostname: 'utfs.io'
+      },
+      {
+        protocol: 'https',
         hostname: 'gluonic.gg',
       },
       env.VERCEL_URL
